@@ -111,12 +111,9 @@ USER_CREDENTIALS = {
 }
 
 # Telegram bot details
-TELEGRAM_CHAT_ID = '854578633'
+TELEGRAM_CHAT_ID = '5946185802'
 TELEGRAM_BOT_TOKEN = '7056070766:AAH84C0uxetDrxNNbpr9ZngZgVDq54BOQGI'
 
-# Telegram bot details
-TELEGRAM_CHAT_ID = '854578633'
-TELEGRAM_BOT_TOKEN = '7056070766:AAH84C0uxetDrxNNbpr9ZngZgVDq54BOQGI'
 
 def get_panel_code(key, phpsessid, number):
     cookies = {'PHPSESSID': phpsessid}
