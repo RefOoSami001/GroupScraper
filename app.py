@@ -187,7 +187,7 @@ def login():
         else:
             flash('Invalid username or password', 'danger')
 
-    return render_template('idnex.html')
+    return render_template('index.html')
 
 
 @app.route('/verification', methods=['GET', 'POST'])
