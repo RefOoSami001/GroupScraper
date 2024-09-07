@@ -3,7 +3,7 @@ import re
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 import io
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Secret key for session management
+app.secret_key = 'ٌRef@osamiSadky'  # Secret key for session management
 
 # Dictionary to store multiple usernames and passwords
 USER_CREDENTIALS = {
@@ -110,7 +110,7 @@ USER_CREDENTIALS = {
 }
 
 # Telegram bot details
-TELEGRAM_CHAT_ID = '854578633'
+TELEGRAM_CHAT_ID = '5946185802'
 TELEGRAM_BOT_TOKEN = '7056070766:AAH84C0uxetDrxNNbpr9ZngZgVDq54BOQGI'
 
 def get_panel_code(KEY, PHPSESSID, NUMBER):
