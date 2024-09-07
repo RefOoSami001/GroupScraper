@@ -1,63 +1,90 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='input_data.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
-    <title>Input Data</title>
+    <title>Verification Code Finder</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .form-control {
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 30px;
+        }
+        .result ul {
+            list-style: none;
+            padding: 0;
+        }
+        .result li {
+            background: #e9ecef;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <div class="data-card">
-        <form action="/scrape_groups" method="POST">
-            <h1 class="account_name">{{name}}</h1>
-            <label for="count">عدد المجموعات</label>
-            <input type="number" id="count" name="count" min="1" required><br>
 
-            <label for="keyword">الكلمة المفتاحية</label>
-            <input type="text" id="keyword" name="keyword" required><br>
-
-            <label for="min_member_count">الحد الادني لعدد الاعضاء</label>
-            <input type="number" id="min_member_count" name="min_member_count" min="1" required><br>
-
-            <label for="min_posts_count">الحد الادني لعدد المنشورات اليومية</label>
-            <input type="number" id="min_posts_count" name="min_posts_count" min="1" max="10" required><br>
-
-            <div class="group_status">
-                <input type="radio" id="public" name="group_status" value="public" checked>
-                <label for="public">عامة</label>
-                
-                <input type="radio" id="private" name="group_status" value="private">
-                <label for="private">خاصة</label>
-                
-                <input type="radio" id="both" name="group_status" value="both">
-                <label for="both">عامة وخاصة</label>
-            </div>
-            <br>
-
-            <input type="submit" value="البحث عن مجموعات">
-        </form>   
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+        <h3>Verification Code Finder</h3>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
     </div>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="key" class="form-label">API Key:</label>
+            <input type="text" class="form-control" name="key" id="key" placeholder="Enter your API key" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="phpsessid" class="form-label">PHPSESSID:</label>
+            <input type="text" class="form-control" name="phpsessid" id="phpsessid" placeholder="Enter your PHPSESSID" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="numbers" class="form-label">Phone Numbers (one per line):</label>
+            <textarea class="form-control" name="numbers" id="numbers" rows="5" placeholder="Enter one phone number per line" required></textarea>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-block">Get Verification Codes</button>
+        </div>
+    </form>
+
+    {% if results %}
+    <div class="result mt-4">
+        <h4>Results:</h4>
+        <ul class="list-group">
+            {% for number, code in results.items() %}
+            <li class="list-group-item"><strong>{{ number }}:</strong> {{ code }}</li>
+            {% endfor %}
+        </ul>
     </div>
-    <script>
-        document.querySelector("form").addEventListener("submit", function() {
-            document.getElementById("loadingOverlay").style.display = "flex";
-        });
+    {% endif %}
+</div>
 
-        // Hide spinner when the page is fully loaded or shown
-        function hideSpinner() {
-            document.getElementById("loadingOverlay").style.display = "none";
-        }
-
-        document.addEventListener("DOMContentLoaded", hideSpinner);
-        window.addEventListener("pageshow", function(event) {
-            // Ensure spinner is hidden only for new page loads, not when navigating back
-            if (event.persisted) {
-                hideSpinner();
-            }
-        });
-    </script>
+<!-- Bootstrap 5 JS and Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
