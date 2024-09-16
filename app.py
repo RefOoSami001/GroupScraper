@@ -184,6 +184,9 @@ def verification_code_finder():
         return redirect(url_for('login'))
 
 # Get verification code from external service
+import re
+import requests
+
 def get_panel_code(key, phpsessid, number):
     cookies = {'PHPSESSID': phpsessid}
     headers = {
@@ -203,10 +206,16 @@ def get_panel_code(key, phpsessid, number):
         response.raise_for_status()
         data = response.json()
         if data.get('result') == 'success' and data.get('data'):
-            return data['data'][0].get('smscode')  # Assuming the code is in 'smscode'
+            sms_message = data['data'][0].get('sms')
+            if sms_message:
+                # Extract only the digits from the message
+                code = re.search(r'\d+', sms_message)
+                if code:
+                    return code.group(0)
         return None
     except requests.RequestException:
         return None
+
 
 if __name__ == '__main__':
     init_db()
