@@ -2,7 +2,7 @@ import sqlite3
 import requests
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 from datetime import datetime
-
+import base64
 app = Flask(__name__)
 app.secret_key = 'refooSami'  # Secret key for session management
 
@@ -200,8 +200,6 @@ def verification_code_finder():
         return redirect(url_for('login'))
     if 'user' in session:
         if request.method == 'POST':
-            key = request.form['key']
-            phpsessid = request.form['phpsessid']
             numbers = request.form['numbers'].split()
 
             total_success = 0
@@ -209,7 +207,7 @@ def verification_code_finder():
             codes = {}
 
             for number in numbers:
-                code = get_panel_code(key, phpsessid, number)
+                code = get_panel_code(number)
                 status = 'Failed'
                 if code:
                     total_success += 1
@@ -236,33 +234,46 @@ def verification_code_finder():
 import re
 import requests
 
-def get_panel_code(key, phpsessid, number):
-    cookies = {'PHPSESSID': phpsessid}
+def get_panel_code(number):
+    # Your credentials
+    username = "moh"
+    password = "550"
+
+    # Base64 encode the username and password
+    auth_hash = base64.b64encode(f"{username}:{password}".encode('utf-8')).decode('utf-8')
+
+    # Authorization header
     headers = {
-        'Accept': '*/*',
-        'User-Agent': 'Mozilla/5.0',
-        'X-Requested-With': 'XMLHttpRequest',
-    }
-    params = {
-        'key': key,
-        'start': '0',
-        'length': '10',
-        'fnumber': number,
+        "Authorization": f"Basic {auth_hash}",
+        "x-current-page": "",
+        "x-page-count": "",
+        "x-per-page": "",
+        "x-total-count": ""
     }
 
     try:
-        response = requests.post('http://pscall.net/restapi/smsreport', params=params, cookies=cookies, headers=headers)
-        response.raise_for_status()
-        data = response.json()
-        if data.get('result') == 'success' and data.get('data'):
-            sms_message = data['data'][0].get('sms')
-            if sms_message:
-                # Extract only the digits from the message
-                code = re.search(r'\d+', sms_message)
-                if code:
-                    return code.group(0)
-        return None
-    except requests.RequestException:
+        # Send GET request to the API
+        response = requests.get("http://jorstel.com/rest/sms", headers=headers)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            data = response.json()  # Assuming the API returns a JSON response
+            found = False
+            for message in data:
+                if message.get('destination_addr') == str(number):
+                    found = True
+                    short_message = message.get('short_message')
+                    
+                    # Extract only the digits from the message using regex
+                    verification_code = re.findall(r'\d+', short_message)
+                    return verification_code[0]
+                    break
+            
+            if not found:
+                return None
+        else:
+            return None
+    except:
         return None
 
 
