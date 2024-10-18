@@ -471,9 +471,15 @@ def get_panel_code_api3(number):
         return code
 
     code = get_verification_code(number, 'mohamed17450', 'mohamed4755')
+    if code:
+        return code
+    
+    code = get_verification_code(number, '1mohamed17450', 'mohamed4755')
+    if code:
+        return code
     return code
 
-def get_panel_code_api4(number):
+def get_verification_code2(number, user, password):
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -504,8 +510,8 @@ def get_panel_code_api4(number):
     }
 
     data = {
-        'username': 'abdo1746',
-        'password': 'abdo1746',
+        'username': user,
+        'password': password,
         'capt': str(result),
     }
 
@@ -544,6 +550,17 @@ def get_panel_code_api4(number):
             return None
     except:
         return None
+
+def get_panel_code_api4(number):
+    code = get_verification_code2(number, 'abdo1746', 'abdo1746')
+    if code:
+        return code
+
+    code = get_verification_code2(number, 'ahmedmosa19', 'ahmedmosa19')
+    if code:
+        return code
+
+    return code
 
 if __name__ == '__main__':
     init_db()
