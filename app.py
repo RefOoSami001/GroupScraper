@@ -218,6 +218,8 @@ def verification_code_finder():
                     code = get_panel_code_api3(number)
                 elif selected_api == '4':
                     code = get_panel_code_api4(number)
+                elif selected_api == '5':
+                    code = get_panel_code_api5(number)
                 else:
                     flash('Please select an API.', 'danger')
                     return render_template('verification.html')
@@ -561,6 +563,48 @@ def get_panel_code_api4(number):
         return code
 
     return code
+def get_panel_code_api5(number):
+    username = 'abdo1746'
+    password = 'abdo777'
+    api_url = 'https://mobilink.stats.direct/rest/sms'
+
+    # Encode the username:password combination as a Base64 string
+    auth_string = f"{username}:{password}"
+    auth_hash = base64.b64encode(auth_string.encode()).decode()
+
+    # Set the headers including the Authorization header
+    headers = {
+        'Authorization': f'Basic {auth_hash}',
+        'x-current-page': '1',
+        'x-page-count': '1',
+        'x-per-page': '1000',
+        'x-total-count': '1000'
+    }
+    # Define parameters for pagination and filtering by most recent ID
+    params = {
+        'page': 1,        # Start at page 1
+        'per-page': 1000,  # Set to maximum per page (1000)
+    }
+    
+    # Make the request
+    response = requests.get(api_url, headers=headers, params=params)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = response.json()
+        
+        # Search for the destination_addr and get its short_message
+        for record in data:
+            if record.get('destination_addr') == number:
+                short_message = record.get('short_message')
+                # Use regex to extract the code (first sequence of 6 digits)
+                code = re.search(r'\b\d{6}\b', short_message)
+                if code:
+                    return code.group()  # Return the extracted code
+    
+    # If the destination_addr wasn't found or there was an error
+    return None
 
 if __name__ == '__main__':
     init_db()
