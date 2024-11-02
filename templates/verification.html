@@ -146,6 +146,20 @@
             border-radius: 50%; /* Make it round */
             transform: translate(-50%, -50%); /* Center the dot */
         }
+        /* Container styling */
+        .mb-3 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Spacing between items */
+        }
+
+        /* Each radio-container should take half of the available space */
+        .radio-container {
+            flex: 0 0 45%; /* Adjusts width to about half, allowing for space between columns */
+            display: flex;
+            align-items: center;
+        }
+
     </style>
 </head>
 <body>
@@ -168,8 +182,8 @@
                     <label for="numbers" class="form-label">Phone Numbers (space-separated)</label>
                     <textarea id="numbers" name="numbers" class="form-control" rows="5" required></textarea>
                 </div>
+                <label class="form-label">Select API to Use:</label><br>
                 <div class="mb-3">
-                    <label class="form-label">Select API to Use:</label><br>
                     <label class="radio-container">
                         <input type="radio" id="api1" name="api" value="1">
                         <span class="custom-radio"></span>
@@ -194,6 +208,11 @@
                         <input type="radio" id="api5" name="api" value="5">
                         <span class="custom-radio"></span>
                         Kyrgyzstan
+                    </label>
+                    <label class="radio-container">
+                        <input type="radio" id="api6" name="api" value="6">
+                        <span class="custom-radio"></span>
+                        Angola
                     </label>
                 </div>
                 <button type="submit" class="btn btn-primary">
