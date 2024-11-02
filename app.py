@@ -220,6 +220,8 @@ def verification_code_finder():
                     code = get_panel_code_api4(number)
                 elif selected_api == '5':
                     code = get_panel_code_api5(number)
+                elif selected_api == '6':
+                    code = get_panel_code_api6(number)
                 else:
                     flash('Please select an API.', 'danger')
                     return render_template('verification.html')
@@ -605,6 +607,33 @@ def get_panel_code_api5(number):
     
     # If the destination_addr wasn't found or there was an error
     return None
+def get_panel_code_api6(number):
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Mozilla/5.0',
+        'X-Requested-With': 'XMLHttpRequest',
+    }
+    params = {
+        'key': "R1VPPUVKgHN1jVBIRVRQSEVU",
+        'start': '0',
+        'length': '10',
+        'fnumber': number,
+    }
+
+    try:
+        response = requests.post('http://pscall.net/restapi/smsreport', params=params, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        if data.get('result') == 'success' and data.get('data'):
+            sms_message = data['data'][0].get('sms')
+            if sms_message:
+                # Extract only the digits from the message
+                code = re.search(r'\d+', sms_message)
+                if code:
+                    return code.group(0)
+        return None
+    except requests.RequestException:
+        return None
 
 if __name__ == '__main__':
     init_db()
