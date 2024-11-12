@@ -222,6 +222,8 @@ def verification_code_finder():
                     code = get_panel_code_api5(number)
                 elif selected_api == '6':
                     code = get_panel_code_api6(number)
+                elif selected_api == '7':
+                    code = get_panel_code_api7(number)
                 else:
                     flash('Please select an API.', 'danger')
                     return render_template('verification.html')
@@ -633,6 +635,19 @@ def get_panel_code_api6(number):
                     return code.group(0)
         return None
     except requests.RequestException:
+        return None
+def get_panel_code_api7(number):
+    response = requests.get(f'http://51.89.151.134/crapi/viewstats?token=%20Q1FXNEVBgmBJf5Bzd2aEW0qWUV1_VWRHZYdxa0l2YIR7l3VTVnI=&record=200&filternum={number}').json()
+    if response['status'] == 'success':
+        message_text = response['data'][0]['message']
+        # Use a regular expression to find the digits in the message
+        verification_code = re.search(r'\d+', message_text)
+        
+        if verification_code:
+            return verification_code.group()
+        else:
+            return None
+    else:
         return None
 
 if __name__ == '__main__':
