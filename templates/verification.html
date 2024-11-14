@@ -144,6 +144,53 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
         }
+            /* Media query for small devices (phones and tablets) */
+    @media (max-width: 768px) {
+        .container {
+            flex-direction: column; /* Stack form and table vertically */
+            padding: 15px;
+        }
+
+        .form-container {
+            width: 100%; /* Form takes full width */
+            position: relative; /* Remove fixed positioning */
+            margin-bottom: 20px; /* Space below form */
+        }
+
+        .table-container {
+            width: 100%; /* Table takes full width */
+            margin-left: 20px; /* Remove left margin */
+            margin-top: 20px;
+            padding: 15px;
+        }
+
+        .radio-buttons {
+            grid-template-columns: repeat(2, 1fr); /* Stack radio buttons in two columns */
+        }
+
+        .btn-primary {
+            padding: 12px; /* Increase button padding for easier tap */
+        }
+
+        table th, table td {
+            padding: 8px; /* Reduce padding for better mobile experience */
+        }
+    }
+
+    /* Adjustments for extra-small devices (phones in portrait mode) */
+    @media (max-width: 480px) {
+        .form-container {
+            padding: 15px; /* Adjust padding for smaller screens */
+        }
+
+        .table-container {
+            padding: 10px; /* Adjust padding for smaller screens */
+        }
+
+        table th, table td {
+            font-size: 14px; /* Reduce font size in the table */
+        }
+    }
     </style>
 </head>
 <body>
