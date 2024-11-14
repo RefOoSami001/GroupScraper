@@ -15,6 +15,9 @@
             overflow: hidden;
             height: 100vh;
             background-color: #e7ecf1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #particles-js {
             position: absolute;
@@ -27,27 +30,53 @@
         }
         .container {
             max-width: 400px;
-            margin: 100px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            background: linear-gradient(145deg, #ffffff, #d1d9e6);
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
             position: relative;
             z-index: 1;
+            color: #333;
+        }
+        h3 {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #007bff;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #333;
+        }
+        .form-control {
+            border: 1px solid #ddd;
+            padding: 12px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
         }
         .btn-primary {
-            background-color: #007bff;
+            background: linear-gradient(145deg, #007bff, #0056b3);
             border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: background 0.3s ease;
         }
         .btn-primary:hover {
-            background-color: #0056b3;
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
     <div id="particles-js"></div>
     <div class="container">
-        <h3 class="text-center">Login</h3>
+        <h3>Login</h3>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -61,13 +90,13 @@
         <form method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">
-                    <i class="fas fa-user"></i> Username:
+                    <i class="fas fa-user"></i> Username
                 </label>
                 <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">
-                    <i class="fas fa-lock"></i> Password:
+                    <i class="fas fa-lock"></i> Password
                 </label>
                 <input type="password" class="form-control" name="password" id="password" placeholder="Enter password" required>
             </div>
@@ -86,14 +115,14 @@
         particlesJS('particles-js', {
             "particles": {
                 "number": {
-                    "value": 250,
+                    "value": 100,
                     "density": {
                         "enable": true,
-                        "value_area": 900
+                        "value_area": 800
                     }
                 },
                 "color": {
-                    "value": ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#ff6600", "#66ff00", "#00ccff", "#cc00ff"]
+                    "value": ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"]
                 },
                 "shape": {
                     "type": "circle",
@@ -104,26 +133,15 @@
                 },
                 "opacity": {
                     "value": 0.6,
-                    "random": false,
                     "anim": {
-                        "enable": false,
+                        "enable": true,
                         "speed": 1,
-                        "opacity_min": 0.1,
-                        "sync": false
+                        "opacity_min": 0.3
                     }
                 },
                 "size": {
-                    "value": 6,
-                    "random": true,
-                    "anim": {
-                        "enable": false,
-                        "speed": 40,
-                        "size_min": 0.1,
-                        "sync": false
-                    }
-                },
-                "line_linked": {
-                    "enable": false
+                    "value": 4,
+                    "random": true
                 },
                 "move": {
                     "enable": true,
@@ -131,22 +149,17 @@
                     "direction": "bottom",
                     "random": false,
                     "straight": false,
-                    "out_mode": "out",
-                    "bounce": true
+                    "out_mode": "out"
                 }
             },
             "interactivity": {
-                "detect_on": "canvas",
                 "events": {
                     "onhover": {
-                        "enable": false,
-                        "mode": "repulse"
+                        "enable": false
                     },
                     "onclick": {
-                        "enable": false,
-                        "mode": "push"
-                    },
-                    "resize": true
+                        "enable": false
+                    }
                 }
             },
             "retina_detect": true
