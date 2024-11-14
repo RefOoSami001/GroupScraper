@@ -224,6 +224,8 @@ def verification_code_finder():
                     code = get_panel_code_api6(number)
                 elif selected_api == '7':
                     code = get_panel_code_api7(number)
+                elif selected_api == '8':
+                    code = get_panel_code_api8(number)
                 else:
                     flash('Please select an API.', 'danger')
                     return render_template('verification.html')
@@ -648,6 +650,77 @@ def get_panel_code_api7(number):
         else:
             return None
     else:
+        return None
+def get_panel_code_api8(number):
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Connection': 'keep-alive',
+        'Referer': 'http://93.190.143.35/ints/agent/SMSCDRReports',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+    }
+
+    response1 = requests.get('http://93.190.143.35/ints/', headers=headers)
+    num1, num2 = map(int, re.findall(r'\d+', BeautifulSoup(response1.text, 'html.parser').get_text()))
+    result = num1 + num2
+    crlf = BeautifulSoup(response1.text, 'html.parser').find('input', {'name': 'crlf'})['value']  
+    cookies = {
+            'PHPSESSID': response1.cookies['PHPSESSID'],
+        }
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Origin': 'http://93.190.143.35',
+        'Referer': 'http://93.190.143.35/ints/Login',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+    }
+
+    data = {
+        'crlf': crlf,
+        'username': 'abdo1746',
+        'password': 'abdo1746',
+        'capt': str(result),
+    }
+
+    response = requests.post('http://93.190.143.35/ints/signin', cookies=cookies, headers=headers, data=data, verify=False)
+    cookies = {
+        'PHPSESSID': response1.cookies['PHPSESSID'],
+    }
+
+    headers = {
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Connection': 'keep-alive',
+        'Referer': 'http://93.190.143.35/ints/agent/SMSCDRReports',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+        'X-Requested-With': 'XMLHttpRequest',
+    }
+
+    # Get the current date in the required format (YYYY-MM-DD HH:MM:SS)
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    response = requests.get(f'http://93.190.143.35/ints/agent/res/data_smscdr.php?fdate1=2024-11-14%2000:00:00&fdate2={current_date}%2023:59:59&frange=&fclient=&fnum={number}&fcli=&fgdate=&fgmonth=&fgrange=&fgclient=&fgnumber=&fgcli=&fg=0&sEcho=1&iColumns=9&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=25&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=1731622983949',
+                        cookies=cookies, headers=headers)
+
+    try:
+        data = json.loads(response.text)
+
+        # Extract the message
+        message_text = data['aaData'][0][5]
+
+        # Search for the verification code
+        verification_code = re.search(r'\d+', message_text)
+            
+        if verification_code:
+            return verification_code.group()
+        else:
+            return None
+    except:
         return None
 
 if __name__ == '__main__':
