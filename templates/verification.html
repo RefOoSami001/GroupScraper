@@ -10,6 +10,13 @@
     <!-- Include Particles.js -->
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <style>
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #007bff;
+        }
         body {
             margin: 0;
             overflow: auto; /* Allow scrolling */
@@ -26,25 +33,36 @@
             overflow: hidden;
         }
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-            padding-bottom: 20px; /* Add space at the bottom for scrolling */
+            display: flex;
+            justify-content: space-between;
+            padding: 30px;
+            margin-left: 0; /* Remove margin-left, as the form is fixed */
         }
+
         .form-container {
+            width: 500px; /* Smaller form width */
             padding: 20px;
-            background: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            overflow: auto; /* Enable scrolling within the form if necessary */
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: linear-gradient(145deg, #ffffff, #d1d9e6);
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            color: #333;
         }
+
         .table-container {
-            margin-top: 20px;
+            width: calc(100% - 500px); /* Adjust width to take the remaining space after the fixed form */
+            margin-left: 520px; /* Ensure there's space on the left for the fixed form */
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -73,33 +91,6 @@
             background-color: #0056b3;
             border-color: #004085;
         }
-        .info-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .info-item {
-            flex: 1;
-        }
-        /* Custom scrollbar styling */
-        textarea {
-            overflow-y: auto; /* Show scrollbar when needed */
-            resize: vertical; /* Allow vertical resizing */
-        }
-        textarea::-webkit-scrollbar {
-            width: 12px; /* Width of the scrollbar */
-        }
-        textarea::-webkit-scrollbar-track {
-            background: #f1f1f1; /* Track color */
-            border-radius: 10px; /* Rounded corners */
-        }
-        textarea::-webkit-scrollbar-thumb {
-            background: #888; /* Scrollbar color */
-            border-radius: 10px; /* Rounded corners */
-        }
-        textarea::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Darker color on hover */
-        }
         .logout-btn-container {
             text-align: right;
         }
@@ -109,9 +100,9 @@
             display: flex;
             align-items: center;
             margin-bottom: 10px;
-            cursor: pointer; /* Changes cursor to pointer */
+            cursor: pointer;
         }
-        
+
         /* Hide default radio button */
         .radio-container input[type="radio"] {
             display: none;
@@ -121,10 +112,10 @@
         .custom-radio {
             width: 20px;
             height: 20px;
-            border: 2px solid #007bff; /* Change border color */
-            border-radius: 50%; /* Make it round */
+            border: 2px solid #007bff;
+            border-radius: 50%;
             position: relative;
-            margin-right: 10px; /* Space between radio and label */
+            margin-right: 10px;
             transition: background-color 0.3s, border-color 0.3s;
         }
 
@@ -140,50 +131,39 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 10px; /* Size of the inner dot */
-            height: 10px; /* Size of the inner dot */
-            background-color: white; /* Color of the inner dot */
-            border-radius: 50%; /* Make it round */
-            transform: translate(-50%, -50%); /* Center the dot */
-        }
-        /* Container styling */
-        .mb-3 {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px; /* Spacing between items */
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        /* Each radio-container should take half of the available space */
-        .radio-container {
-            flex: 0 0 45%; /* Adjusts width to about half, allowing for space between columns */
-            display: flex;
-            align-items: center;
+        /* Grid Layout for Radio Buttons */
+        .radio-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
         }
-
     </style>
 </head>
 <body>
     <div id="particles-js"></div>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Verification Code Finder</h1>
-        <form method="POST" action="{{ url_for('verification_code_finder') }}">
-            <div class="form-container">
-                <!-- Logout Button -->
+        <!-- Form Section -->
+        <div class="form-container">
+            <h1 class="text-center mb-4">Verification Code Finder</h1>
+            <form method="POST" action="{{ url_for('verification_code_finder') }}">
                 <div class="logout-btn-container mt-4">
                     <a href="{{ url_for('logout') }}" class="btn btn-danger">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 </div>
-                <!-- <div class="mb-3">
-                    <label for="phpsessid" class="form-label">PHPSESSID</label>
-                    <input type="text" id="phpsessid" name="phpsessid" class="form-control" required>
-                </div> -->
                 <div class="mb-3">
                     <label for="numbers" class="form-label">Phone Numbers (space-separated)</label>
-                    <textarea id="numbers" name="numbers" class="form-control" rows="5" required></textarea>
+                    <textarea id="numbers" name="numbers" class="form-control" rows="8" required></textarea>
                 </div>
                 <label class="form-label">Select API to Use:</label><br>
-                <div class="mb-3">
+                <div class="radio-buttons mb-3">
                     <label class="radio-container">
                         <input type="radio" id="api1" name="api" value="1">
                         <span class="custom-radio"></span>
@@ -202,7 +182,7 @@
                     <label class="radio-container">
                         <input type="radio" id="api4" name="api" value="4">
                         <span class="custom-radio"></span>
-                        Ims Television
+                        +260
                     </label>
                     <label class="radio-container">
                         <input type="radio" id="api5" name="api" value="5">
@@ -225,45 +205,46 @@
                         +60
                     </label>
                 </div>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary w-100">
                     <i class="fas fa-download"></i> Get Data
                 </button>
-                {% if results %}
-                    <div class="mt-4">
-                        <div class="info-container mb-3">
-                            <div class="info-item">
-                                <strong>Total Success:</strong> {{ results['total_success'] }}
-                            </div>
-                            <div class="info-item">
-                                <strong>Total Fail:</strong> {{ results['total_fail'] }}
-                            </div>
-                            <div class="info-item">
-                                <strong>Date:</strong> {{ results['date'] }}
-                            </div>
-                        </div>
-                        <div class="table-container">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Phone Number</th>
-                                        <th>Code</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for number, code in results['codes'].items() %}
-                                        <tr>
-                                            <td>{{ number }}</td>
-                                            <td>{{ code }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                {% endif %}
+            </form>
+        </div>
+        
+        <!-- Table Section -->
+        {% if results %}
+        <div class="table-container">
+            <div class="info-container mb-3">
+                <div class="info-item">
+                    <strong>Total Success:</strong> {{ results['total_success'] }}
+                </div>
+                <div class="info-item">
+                    <strong>Total Fail:</strong> {{ results['total_fail'] }}
+                </div>
+                <div class="info-item">
+                    <strong>Date:</strong> {{ results['date'] }}
+                </div>
             </div>
-        </form>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Phone Number</th>
+                        <th>Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for number, code in results['codes'].items() %}
+                        <tr>
+                            <td>{{ number }}</td>
+                            <td>{{ code }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
     </div>
+
     <!-- Include Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Initialize Particles.js -->
@@ -271,14 +252,14 @@
         particlesJS('particles-js', {
             "particles": {
                 "number": {
-                    "value": 250,
+                    "value": 100,
                     "density": {
                         "enable": true,
-                        "value_area": 900
+                        "value_area": 800
                     }
                 },
                 "color": {
-                    "value": ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#ff6600", "#66ff00", "#00ccff", "#cc00ff"]
+                    "value": ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"]
                 },
                 "shape": {
                     "type": "circle",
@@ -289,26 +270,15 @@
                 },
                 "opacity": {
                     "value": 0.6,
-                    "random": false,
                     "anim": {
-                        "enable": false,
+                        "enable": true,
                         "speed": 1,
-                        "opacity_min": 0.1,
-                        "sync": false
+                        "opacity_min": 0.3
                     }
                 },
                 "size": {
-                    "value": 6,
-                    "random": true,
-                    "anim": {
-                        "enable": false,
-                        "speed": 40,
-                        "size_min": 0.1,
-                        "sync": false
-                    }
-                },
-                "line_linked": {
-                    "enable": false
+                    "value": 4,
+                    "random": true
                 },
                 "move": {
                     "enable": true,
@@ -316,22 +286,17 @@
                     "direction": "bottom",
                     "random": false,
                     "straight": false,
-                    "out_mode": "out",
-                    "bounce": true
+                    "out_mode": "out"
                 }
             },
             "interactivity": {
-                "detect_on": "canvas",
                 "events": {
                     "onhover": {
-                        "enable": false,
-                        "mode": "repulse"
+                        "enable": false
                     },
                     "onclick": {
-                        "enable": false,
-                        "mode": "push"
-                    },
-                    "resize": true
+                        "enable": false
+                    }
                 }
             },
             "retina_detect": true
