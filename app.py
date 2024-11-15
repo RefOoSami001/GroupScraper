@@ -714,7 +714,7 @@ def get_panel_code_api8(number):
         message_text = data['aaData'][0][5]
 
         # Search for the verification code
-        verification_code = re.search(r'\d+', message_text)
+        verification_code = re.search(r'\b\d{6}\b', message_text)
             
         if verification_code:
             return verification_code.group()
