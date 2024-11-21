@@ -487,6 +487,9 @@ def get_panel_code_api3(number):
     code = get_verification_code(number, '1mohamed17450', 'mohamed4755')
     if code:
         return code
+    code = get_verification_code(number, 'ahmedmosa1232', 'ahmedmosa1232')
+    if code:
+        return code
     return code
 
 def get_verification_code2(number, user, password):
