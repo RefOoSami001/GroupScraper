@@ -462,7 +462,6 @@ def get_verification_code(number, user, password):
     )
     try:
         data = json.loads(response.text)
-        print(data)
         # Extract the message
         message_text = data['aaData'][0][4]
 
