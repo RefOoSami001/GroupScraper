@@ -191,6 +191,7 @@
             font-size: 14px; /* Reduce font size in the table */
         }
     }
+    
     </style>
 </head>
 <body>
@@ -209,54 +210,27 @@
                     <label for="numbers" class="form-label">Phone Numbers (space-separated)</label>
                     <textarea id="numbers" name="numbers" class="form-control" rows="8" required></textarea>
                 </div>
-                <label class="form-label">Select API to Use:</label><br>
-                <div class="radio-buttons mb-3">
-                    <label class="radio-container">
-                        <input type="radio" id="api1" name="api" value="1">
-                        <span class="custom-radio"></span>
-                        +221
-                    </label>
-                    <label class="radio-container">
-                        <input type="radio" id="api2" name="api" value="2">
-                        <span class="custom-radio"></span>
-                        +502
-                    </label>
-                    <label class="radio-container">
-                        <input type="radio" id="api3" name="api" value="3">
-                        <span class="custom-radio"></span>
-                        +996\+855
-                    </label>
-                    <label class="radio-container">
-                        <input type="radio" id="api4" name="api" value="4">
-                        <span class="custom-radio"></span>
-                        +260
-                    </label>
-                    <label class="radio-container">
-                        <input type="radio" id="api5" name="api" value="5">
-                        <span class="custom-radio"></span>
-                        Kyrgyzstan
-                    </label>
-                    <label class="radio-container">
-                        <input type="radio" id="api6" name="api" value="6">
-                        <span class="custom-radio"></span>
-                        Angola
-                    </label>
-                    <label class="radio-container">
-                        <input type="radio" id="api7" name="api" value="7">
-                        <span class="custom-radio"></span>
-                        +856
-                    </label>
-                    <label class="radio-container">
-                        <input type="radio" id="api8" name="api" value="8">
-                        <span class="custom-radio"></span>
-                        +60
-                    </label>
+                <label for="api-select" class="form-label">Select API to Use:</label>
+                <div class="mb-3">
+                    <select id="api-select" name="api" class="form-select" required>
+                        <option value="" disabled selected>Select an API</option>
+                        <option value="1">+221</option>
+                        <option value="2">+502</option>
+                        <option value="3">+996\+855</option>
+                        <option value="4">+260</option>
+                        <option value="5">Kyrgyzstan</option>
+                        <option value="6">Angola</option>
+                        <option value="7">+856</option>
+                        <option value="8">+60</option>
+                        <option value="9">+966</option>
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="fas fa-download"></i> Get Data
                 </button>
             </form>
         </div>
+        
         
         <!-- Table Section -->
         {% if results %}
