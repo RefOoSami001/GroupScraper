@@ -228,6 +228,12 @@ def verification_code_finder():
                     code = get_panel_code_api8(number)
                 elif selected_api == '9':
                     code = get_panel_code_api9(number)
+                elif selected_api == '10':
+                    code = get_panel_code_api10(number)
+                elif selected_api == '11':
+                    code = get_panel_code_api11(number)
+                elif selected_api == '12':
+                    code = get_panel_code_api12(number)
                 else:
                     flash('Please select an API.', 'danger')
                     return render_template('verification.html')
@@ -795,6 +801,160 @@ def get_panel_code_api9(number):
             return None
     except:
         return None
+
+def get_panel_code_api10(number):
+    code = get_verification_code3(number, 'abdomostafa1746', 'abdomostafa1746')
+    if code:
+        return code
+
+    code = get_verification_code3(number, 'abdo1746', 'abdo1746')
+    if code:
+        return code
+
+    return code  
+def get_panel_code_api11(number):
+    code = get_verification_code4(number, 'Abdo17461746', 'Abdo17461746')
+    if code:
+        return code
+
+    code = get_verification_code4(number, 'mohhhamd01', 'mohhhamd0')
+    if code:
+        return code
+
+    return code  
+def get_panel_code_api12(number):
+    token = 'W8SPf83NqwGy2LvRZHYMBoLK890fFEpkW3k5hO3Reec0ae89'
+    url = f'https://www.ivasms.com/api/sms?to={number}'
+
+    # Define headers
+    headers = {
+        'Authorization': f'Bearer {token}',
+    }
+
+    # Send request
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        message = response.json()['message']
+
+        # Use regex to extract the code
+        match = re.search(r'\d+', message)
+        if match:
+            code = match.group()
+            return code
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        return None
+
+def get_verification_code3(number, user, password):
+
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Connection': 'keep-alive',
+        'Referer': 'http://91.232.105.47/NumberPanel/agent/SMSDashboard',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    }
+
+    response1 = requests.get('http://91.232.105.47/NumberPanel/login', headers=headers)
+    num1, num2 = map(int, re.findall(r'\d+', BeautifulSoup(response1.text, 'html.parser').get_text()))
+    result = num1 + num2
+    cookies = {
+            'PHPSESSID': response1.cookies['PHPSESSID'],
+        }
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        # 'Cookie': 'PHPSESSID=ag67srbm45h1f0b2vf7u58t0qb',
+        'Origin': 'http://91.232.105.47',
+        'Referer': 'http://91.232.105.47/NumberPanel/login',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    }
+
+    data = {
+        'username': user,
+        'password': password,
+        'capt': str(result),
+    }
+
+    response = requests.post('http://91.232.105.47/NumberPanel/signin', cookies=cookies, headers=headers, data=data, verify=False)
+    cookies = {
+        'PHPSESSID': response1.cookies['PHPSESSID'],
+    }
+
+    headers = {
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Connection': 'keep-alive',
+        # 'Cookie': 'PHPSESSID=kvbs85l6e2ne81feafqngih2ff',
+        'Referer': 'http://91.232.105.47/NumberPanel/agent/SMSCDRReports',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'X-Requested-With': 'XMLHttpRequest',
+    }
+
+    # Get the current date in the required format (YYYY-MM-DD HH:MM:SS)
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    response = requests.get(f'http://91.232.105.47/NumberPanel/agent/res/data_smscdr.php?fdate1=2024-12-08%2000:00:00&fdate2={current_date}%2023:59:59&frange=&fclient=&fnum={number}&fcli=&fgdate=&fgmonth=&fgrange=&fgclient=&fgnumber=&fgcli=&fg=0&sEcho=1&iColumns=9&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=25&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=1733682941115',
+                        cookies=cookies, headers=headers)
+
+    try:
+        data = json.loads(response.text)
+
+        # Extract the message
+        message_text = data['aaData'][0][5]
+
+        # Search for the verification code
+        verification_code = re.search(r'\d+', message_text)
+            
+        if verification_code:
+            return verification_code.group()
+        else:
+            return None
+    except:
+        return None
+
+def get_verification_code4(number,user,password):
+
+    api_url = 'http://zivastats.com/rest/sms'
+
+    auth_hash = base64.b64encode(f"{user}:{password}".encode("utf-8")).decode("utf-8")
+
+    # Set the headers including the Authorization header
+    headers = {
+        "Authorization": f"Basic {auth_hash}"
+    }
+    # Define parameters for pagination and filtering by most recent ID
+    params = {
+        'page': 1,        # Start at page 1
+        'per-page': 1000,  # Set to maximum per page (1000)
+    }
+    
+    # Make the request
+    response = requests.get(api_url, headers=headers, params=params)
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = response.json()
+        
+        # Search for the destination_addr and get its short_message
+        for record in data:
+            if record.get('destination_addr') == number:
+                short_message = record.get('short_message')
+                # Use regex to extract the code (first sequence of 6 digits)
+                code = re.search(r'\d+', short_message)
+                if code:
+                    return code.group()  # Return the extracted code
+    
+    # If the destination_addr wasn't found or there was an error
+    return None
+
 if __name__ == '__main__':
     init_db()
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=8000)
