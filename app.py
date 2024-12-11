@@ -8,7 +8,7 @@ from datetime import datetime
 import re
 from bs4 import BeautifulSoup
 app = Flask(__name__)
-app.secret_key = 'refooSami'  # Secret key for session management
+app.secret_key = '+201011508719'  # Secret key for session management
 
 # Initialize SQLite database
 def init_db():
@@ -823,7 +823,7 @@ def get_panel_code_api11(number):
 
     return code  
 def get_panel_code_api12(number):
-    token = 'ZXj2AUOHNXgm8TRAp84oxkliGssFnC5FXMgbqL7N75a4cc63'
+    token = '9vr06Nu6D3ndY53EwgSTZI1Y0LeCUih8gbbWQo0Nd5689b52'
     url = f'https://www.ivasms.com/api/sms?to={number}'
 
     # Define headers
