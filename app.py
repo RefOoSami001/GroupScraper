@@ -823,7 +823,7 @@ def get_panel_code_api11(number):
 
     return code  
 def get_panel_code_api12(number):
-    token = 'SGKJUTulZp2vW6uVLtB4HTAIKvfHcmSGlZwydobVcd6ddd9e'
+    token = 'pWqPdT3CHE4fnqcSRxK8Dt4lOUJjJUNEyHMgujJa99eddc72'
     url = f'https://www.ivasms.com/api/sms?to={number}'
 
     # Define headers
