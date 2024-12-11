@@ -823,12 +823,6 @@ def get_panel_code_api11(number):
 
     return code  
 def get_panel_code_api12(number):
-    try:
-        response = requests.get('https://api.ipify.org?format=json')
-        public_ip = response.json()['ip']
-        print(f"Public IP Address: {public_ip}")
-    except requests.RequestException as e:
-        print(f"Error fetching public IP: {e}")
     token = 'kbEKtRHGNbGXJrjSs02D5jk27GWJNcLAjZwDm7mdb3eebafc'
     url = f'https://www.ivasms.com/api/sms?to={number}'
 
