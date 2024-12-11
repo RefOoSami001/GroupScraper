@@ -823,7 +823,7 @@ def get_panel_code_api11(number):
 
     return code  
 def get_panel_code_api12(number):
-    token = 'SYVSrZmd8EgOoQBcadmSRv4FcTK6efBZO2JdPgm656f33884'
+    token = 'ZXj2AUOHNXgm8TRAp84oxkliGssFnC5FXMgbqL7N75a4cc63'
     url = f'https://www.ivasms.com/api/sms?to={number}'
 
     # Define headers
@@ -834,6 +834,7 @@ def get_panel_code_api12(number):
     # Send request
     try:
         response = requests.get(url, headers=headers)
+        print(response.json())
         response.raise_for_status()  # Raise HTTPError for bad responses
         message = response.json()['message']
 
@@ -957,4 +958,4 @@ def get_verification_code4(number,user,password):
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=False, host='0.0.0.0', port=8000)
+    app.run(debug=True)
