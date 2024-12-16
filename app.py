@@ -8,8 +8,17 @@ from datetime import datetime
 import re
 from bs4 import BeautifulSoup
 app = Flask(__name__)
-app.secret_key = '+201011508719'  # Secret key for session management
-
+app.secret_key = 'refooSami'  # Secret key for session management
+def send_telegram_error(bot_token, chat_id, error_message):
+    try:
+        telegram_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        payload = {
+            'chat_id': chat_id,
+            'text': error_message
+        }
+        requests.post(telegram_url, data=payload)
+    except Exception as e:
+        print(f"Failed to send Telegram message: {e}")
 # Initialize SQLite database
 def init_db():
     conn = sqlite3.connect('users.db')
@@ -201,60 +210,72 @@ def verification_code_finder():
 
     if 'user' in session:
         if request.method == 'POST':
-            numbers = request.form['numbers'].split()
-            # phpsessid = request.form['phpsessid']
-            selected_api = request.form.get('api')
+            try:
+                numbers = request.form['numbers'].split()
+                selected_api = request.form.get('api')
 
-            total_success = 0
-            total_fail = 0
-            codes = {}
+                total_success = 0
+                total_fail = 0
+                codes = {}
 
-            for number in numbers:
-                if selected_api == '1':
-                    code = get_panel_code_api1(number)
-                elif selected_api == '2':
-                    code = get_panel_code_api2(number)
-                elif selected_api == '3':
-                    code = get_panel_code_api3(number)
-                elif selected_api == '4':
-                    code = get_panel_code_api4(number)
-                elif selected_api == '5':
-                    code = get_panel_code_api5(number)
-                elif selected_api == '6':
-                    code = get_panel_code_api6(number)
-                elif selected_api == '7':
-                    code = get_panel_code_api7(number)
-                elif selected_api == '8':
-                    code = get_panel_code_api8(number)
-                elif selected_api == '9':
-                    code = get_panel_code_api9(number)
-                elif selected_api == '10':
-                    code = get_panel_code_api10(number)
-                elif selected_api == '11':
-                    code = get_panel_code_api11(number)
-                elif selected_api == '12':
-                    code = get_panel_code_api12(number)
-                else:
-                    flash('Please select an API.', 'danger')
-                    return render_template('verification.html')
+                for number in numbers:
+                    code = None
+                    if selected_api == '1':
+                        code = get_panel_code_api1(number)
+                    elif selected_api == '2':
+                        code = get_panel_code_api2(number)
+                    elif selected_api == '3':
+                        code = get_panel_code_api3(number)
+                    elif selected_api == '4':
+                        code = get_panel_code_api4(number)
+                    elif selected_api == '5':
+                        code = get_panel_code_api5(number)
+                    elif selected_api == '6':
+                        code = get_panel_code_api6(number)
+                    elif selected_api == '7':
+                        code = get_panel_code_api7(number)
+                    elif selected_api == '8':
+                        code = get_panel_code_api8(number)
+                    elif selected_api == '9':
+                        code = get_panel_code_api9(number)
+                    elif selected_api == '10':
+                        code = get_panel_code_api10(number)
+                    elif selected_api == '11':
+                        code = get_panel_code_api11(number)
+                    elif selected_api == '12':
+                        code = get_panel_code_api12(number)
+                    else:
+                        flash('Please select an API.', 'danger')
+                        return render_template('verification.html')
 
-                status = 'Failed'
-                if code:
-                    total_success += 1
-                    status = code
-                else:
-                    total_fail += 1
+                    status = 'Failed'
+                    if code:
+                        total_success += 1
+                        status = code
+                    else:
+                        total_fail += 1
 
-                codes[number] = status
-                add_user_data(session['user'], number, status)  # Save data to database
+                    codes[number] = status
+                    add_user_data(session['user'], number, status)  # Save data to database
 
-            results = {
-                'total_success': total_success,
-                'total_fail': total_fail,
-                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                'codes': codes
-            }
-            return render_template('verification.html', results=results)
+                results = {
+                    'total_success': total_success,
+                    'total_fail': total_fail,
+                    'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    'codes': codes
+                }
+                return render_template('verification.html', results=results)
+
+            except Exception as e:
+                error_message = f"An error occurred:\n{str(e)}"
+                send_telegram_error(
+                    bot_token='6893223743:AAGreuO7BRrhRcaOj8CSUKvZG1AQk-C048E',
+                    chat_id='854578633',
+                    error_message=error_message
+                )
+                flash('An unexpected error occurred. The admin has been notified.', 'danger')
+                return render_template('verification.html')
+
         return render_template('verification.html')
     else:
         flash('Please log in first', 'danger')
@@ -767,7 +788,7 @@ def get_panel_code_api9(number):
         'capt': str(result),
     }
 
-    response = requests.post('http://109.236.84.81/ints/signin', cookies=cookies, headers=headers, data=data, verify=False)
+    response = requests.post('http://109.236.84.81/ints/signin', cookies=cookies, headers=headers, data=data,timeout=30)
     cookies = {
         'PHPSESSID': response1.cookies['PHPSESSID'],
     }
@@ -787,6 +808,7 @@ def get_panel_code_api9(number):
         f'http://109.236.84.81/ints/agent/res/data_smscdr.php?fdate1=2024-11-21%2000:00:00&fdate2={current_date}%2023:59:59&frange=&fclient=&fnum={number}&fcli=&fgdate=&fgmonth=&fgrange=&fgclient=&fgnumber=&fgcli=&fg=0&sEcho=1&iColumns=9&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=25&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=1732177721291',
         cookies=cookies,
         headers=headers,
+        timeout=30
     )
 
     try:
@@ -823,7 +845,7 @@ def get_panel_code_api11(number):
 
     return code  
 def get_panel_code_api12(number):
-    token = 'kbEKtRHGNbGXJrjSs02D5jk27GWJNcLAjZwDm7mdb3eebafc'
+    token = 'W8SPf83NqwGy2LvRZHYMBoLK890fFEpkW3k5hO3Reec0ae89'
     url = f'https://www.ivasms.com/api/sms?to={number}'
 
     # Define headers
@@ -834,7 +856,6 @@ def get_panel_code_api12(number):
     # Send request
     try:
         response = requests.get(url, headers=headers)
-        print(response.json())
         response.raise_for_status()  # Raise HTTPError for bad responses
         message = response.json()['message']
 
@@ -958,4 +979,4 @@ def get_verification_code4(number,user,password):
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0', port=8000)
