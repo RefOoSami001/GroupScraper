@@ -851,8 +851,8 @@ def get_panel_code_api12(number):
         response = requests.get('https://api.ipify.org')
         return response.text
     
-    print("Your IP address is:", get_ip())
-    token = 'W8SPf83NqwGy2LvRZHYMBoLK890fFEpkW3k5hO3Reec0ae89'
+    # print("Your IP address is:", get_ip())
+    token = 'tqimpuIULab9dtcbRssavrhuShijdNupBzjhNnxa62d80b40'
     url = f'https://www.ivasms.com/api/sms?to={number}'
 
     # Define headers
