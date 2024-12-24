@@ -855,11 +855,32 @@ def get_panel_code_api11(number):
     return code  
 def get_panel_code_api12(number):
     def get_ip():
-        response = requests.get('https://api.ipify.org')
-        return response.text
-    
-    print("Your IP address is:", get_ip())
-    token = 'W8SPf83NqwGy2LvRZHYMBoLK890fFEpkW3k5hO3Reec0ae89'
+        try:
+            response = requests.get('https://api.ipify.org')
+            response.raise_for_status()
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print("Failed to fetch IP address:", e)
+            return None
+
+    # Map of IP addresses to tokens
+    ip_token_map = {
+        '52.15.118.168': 'HUS83ojxYHmsXyJPb0XUui9p5FY3V2pNPdoN6TBK47f19650',
+        '3.129.111.220': 'kbEKtRHGNbGXJrjSs02D5jk27GWJNcLAjZwDm7mdb3eebafc',
+        '3.134.238.10': 'tqimpuIULab9dtcbRssavrhuShijdNupBzjhNnxa62d80b40',
+    }
+
+    # Get the current IP address
+    ip = get_ip()
+    if not ip:
+        return "Failed to retrieve IP address."
+
+    print("Your IP address is:", ip)
+
+    # Get the token based on the IP
+    token = ip_token_map.get(ip)
+    if not token:
+        return "Token not found for this IP address."
     url = f'https://www.ivasms.com/api/sms?to={number}'
 
     # Define headers
