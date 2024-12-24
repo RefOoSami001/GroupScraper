@@ -227,6 +227,7 @@
                         <option value="11">Netherlands</option>
                         <option value="12">+507</option>
                         <option value="13">+44</option>
+                        <option value="14">Iraq</option>
                     </select>
                     <div class="mb-3" id="phpsessid-field" style="display: none;">
                         <label for="phpsessid" class="form-label">PHPSESSID</label>
@@ -279,12 +280,12 @@
     <!-- Initialize Particles.js -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const apiSelect = document.getElementById('api-select');  // Select the dropdown
+            const apiSelect = document.getElementById('api-select'); // Select the dropdown
             const phpsessidField = document.getElementById('phpsessid-field'); // Container for PHPSESSID input
     
             apiSelect.addEventListener('change', function () {
                 // Show or hide based on API selection
-                if (apiSelect.value === '9') { 
+                if (apiSelect.value === '9' || apiSelect.value === '14') { 
                     phpsessidField.style.display = 'block';
                 } else {
                     phpsessidField.style.display = 'none';
@@ -292,7 +293,6 @@
             });
         });
     </script>
-    
     <script>
         particlesJS('particles-js', {
             "particles": {
