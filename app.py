@@ -993,13 +993,41 @@ def get_panel_code_api14(number,phpsessid):
     except:
         return None
 def get_panel_code_api15(number):
+    def get_ip():
+        try:
+            response = requests.get('https://api.ipify.org')
+            response.raise_for_status()
+            return response.text
+        except requests.exceptions.RequestException as e:
+            print("Failed to fetch IP address:", e)
+            return None
+
+    # Map of IP addresses to tokens
+    ip_token_map = {
+        '105.35.254.151': 'jPFbLQPZQ0G2LpybTGPFPQ',
+        '52.15.118.168': 'DJCeB355SXSkrq5GAm3znA',
+        '3.129.111.220': 'e83FzqWdRB-1aEPiC1yndg',
+        '3.134.238.10': 'c6SYMh7PTHOFMKJ1vZ0zOg',
+    }
+
+    # Get the current IP address
+    ip = get_ip()
+    if not ip:
+        return "Failed to retrieve IP address."
+
+    print("Your IP address is:", ip)
+
+    # Get the token based on the IP
+    token = ip_token_map.get(ip)
+    if not token:
+        return "Token not found for this IP address."
     now = datetime.now(timezone.utc)
     start_day = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
     end_day = datetime(now.year, now.month, now.day, 23, 59, 59, tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
     headers = {
         'Content-Type': 'application/json',
-        'Api-Key': 'jPFbLQPZQ0G2LpybTGPFPQ',
+        'Api-Key': str(token),
     }
 
     json_data = {
