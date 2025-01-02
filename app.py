@@ -1005,9 +1005,9 @@ def get_panel_code_api15(number):
     # Map of IP addresses to tokens
     ip_token_map = {
         '105.35.254.151': 'jPFbLQPZQ0G2LpybTGPFPQ',
-        '52.15.118.168': 'DJCeB355SXSkrq5GAm3znA',
-        '3.129.111.220': 'e83FzqWdRB-1aEPiC1yndg',
-        '3.134.238.10': 'c6SYMh7PTHOFMKJ1vZ0zOg',
+        '52.15.118.168': 'HPkvpXMGSByJcKFuBHfg9g',
+        '3.129.111.220': 'z93tBalmQo237lOmFqo-Mg',
+        '3.134.238.10': 'ZgDrlp1MSPKrQooQ7aeiqg',
     }
 
     # Get the current IP address
