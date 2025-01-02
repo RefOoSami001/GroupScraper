@@ -1048,6 +1048,7 @@ def get_panel_code_api15(number):
     }
 
     response = requests.post('https://api.premiumy.net/v1.0', headers=headers, json=json_data)
+    print(response.text)
     if response.status_code == 200:
         data = response.json()
         mdr_full_list = data['result']['mdr_full_list']
