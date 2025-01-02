@@ -1007,7 +1007,7 @@ def get_panel_code_api15(number):
         '105.35.254.151': 'jPFbLQPZQ0G2LpybTGPFPQ',
         '52.15.118.168': 'DJCeB355SXSkrq5GAm3znA',
         '3.129.111.220': 'e83FzqWdRB-1aEPiC1yndg',
-        '3.134.238.10': 'c6SYMh7PTHOFMKJ1vZ0zOg',
+        '3.134.238.10': 'c6SYMh7PTHOFMKJ1vZ0z0g',
     }
 
     # Get the current IP address
