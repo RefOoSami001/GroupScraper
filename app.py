@@ -6,6 +6,7 @@ import base64
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 from datetime import datetime
 import re
+from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 app = Flask(__name__)
 app.secret_key = 'refooSami'  # Secret key for session management
@@ -255,6 +256,8 @@ def verification_code_finder():
                             flash('PHPSESSID is required for +966 API.', 'danger')
                             return render_template('verification.html')
                         code = get_panel_code_api14(number, phpsessid)  # Pass PHPSESSID
+                    elif selected_api == '15':
+                        code = get_panel_code_api15(number)
                     else:
                         flash('Please select an API.', 'danger')
                         return render_template('verification.html')
@@ -988,6 +991,47 @@ def get_panel_code_api14(number,phpsessid):
         else:
             return None
     except:
+        return None
+def get_panel_code_api15(number):
+    now = datetime.now(timezone.utc)
+    start_day = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    end_day = datetime(now.year, now.month, now.day, 23, 59, 59, tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Api-Key': 'jPFbLQPZQ0G2LpybTGPFPQ',
+    }
+
+    json_data = {
+        'id': None,
+        'jsonrpc': '2.0',
+        'method': 'sms.mdr_full:get_list',
+        'params': {
+            'filter': {
+                'start_date': start_day,
+                'end_date': end_day,
+                'senderid': '',
+                'phone': str(number),
+            },
+            'page': 1,
+            'per_page': 15,
+        },
+    }
+
+    response = requests.post('https://api.premiumy.net/v1.0', headers=headers, json=json_data)
+    if response.status_code == 200:
+        data = response.json()
+        mdr_full_list = data['result']['mdr_full_list']
+        if mdr_full_list:  # Check if the list is not empty
+            message_text = mdr_full_list[0]['message']
+            verification_code = re.search(r"\b\d{5,6}\b", message_text)
+            if verification_code:
+                return verification_code.group()
+            else:
+                return None
+        else:
+            return None
+    else:
         return None
 
 def get_verification_code3(number, user, password):
