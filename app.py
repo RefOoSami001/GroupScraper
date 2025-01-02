@@ -1019,6 +1019,7 @@ def get_panel_code_api15(number):
 
     # Get the token based on the IP
     token = ip_token_map.get(ip)
+    print(token)
     if not token:
         return "Token not found for this IP address."
     now = datetime.now(timezone.utc)
@@ -1047,6 +1048,7 @@ def get_panel_code_api15(number):
     }
 
     response = requests.post('https://api.premiumy.net/v1.0', headers=headers, json=json_data)
+    print(response.text)
     if response.status_code == 200:
         data = response.json()
         mdr_full_list = data['result']['mdr_full_list']
