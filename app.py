@@ -970,7 +970,7 @@ def get_panel_code_api13(number):
     data = response.json()
     if data['data']:
         last_message = data['data'][0]['message_text']
-        match = re.search(r'\b\d{5}\b', last_message)
+        match = re.search(r"\b\d{5,6}\b", last_message)
         if match:
             return match.group()
     return None
