@@ -877,29 +877,80 @@ def get_panel_code_api12(number):
     except requests.exceptions.RequestException as e:
         return None
 def get_panel_code_api13(number):
-    cookies = {
-        'remember_web_59ba36addc2b2f9401580f014c7f58ea4e30989d': 'eyJpdiI6ImxGRG5QRTNFVzFDOHE3L2E4bnZuMEE9PSIsInZhbHVlIjoicXVNMGxVL2NOU2R5VENMbW9VWUp1cWFPNzNadVJWeld1L0dTNVN0SjlBZVNiM3N6ejVPcU5JUExBTUFaMG50VGlMR1lqR1ZwbUZWckZ1Z3BtZG80SHNUTDUvbXRkWGszQ0NQWVFzeDFQd1VpUlFGSzV3ZnRibmpTQTUreVF5ZlJtaExWNTI0WEVtRFBFZkFKMHJoT2F2WEc5RjQxVVBSRDNoMGlVT1YwNnZiOHM1bUNGQ0lOY0Y1UE5SbUVBNWt0MVJ1Tm4xV3RZdk9FdmNyK25uckEzSjI3L09sOGJySStoejBvMTNqUnozWT0iLCJtYWMiOiJhZWMyYzFjMDQ2ZjhmOWQ4MzNjNWJlMjgyNTM4N2ZiMDkwMGY5NTE2MWVhY2ZmM2YyYzU3ZDMwYTEzMTQ2NjVkIiwidGFnIjoiIn0%3D',
-        'XSRF-TOKEN': 'eyJpdiI6InZWVG5wcktzRUtwVi9zL0hWVDVET3c9PSIsInZhbHVlIjoiM2JHOWwwMktBTnMxd21Mck14VzlJNVpoRlVJcmhHbkUxYXEvK2t0b2g4V2Y1ckhJNmpwZTVPUlR0NmdpRXhpYXVURXNReEhGZWZmNzZ4UU9LVkl2aWJ3MnpSZ2xBOElQbFEza21XR0R5cFNncktHTDB2YkVMKzJiRDJZOG9PRlAiLCJtYWMiOiJmMWZhYTM0NmU4NzdkY2UzYzYzODllY2E5Yzg3NDY5YjM3YzY2ZTYwMzE0Yjc4N2UzMzY5YzM2MzBmNTk0MzU2IiwidGFnIjoiIn0%3D',
-        'basha_iprn_vas_session': 'eyJpdiI6InBIK2tiYkJXU1owd1dORUlGd2N5OVE9PSIsInZhbHVlIjoiQUpjTTUzbXpDdFRaYjgrOHl6NE5xZ3QxbkQ3U0tDQm1ZbUFnTlV2YmlIK2NydDNIS3ZhRWFQWnFpRVBFRmtzL0l4YWFyeEthVTJMSkhuS2s3NG5ucmkvdVkvVkxrNStITjZETlNrQVVKMytrMkI5YmdYNHYvL2RMakNVUXRtREEiLCJtYWMiOiIyZjQ2ODJlMTBmMDRkN2Q3ZGRhYmRlMzg4Yjk1N2U1NTkzNGMxMDBiZTk4ZDM4N2RiOWQyNDUxYjJmYzZjNWUxIiwidGFnIjoiIn0%3D',
+    s = requests.Session()
+    headers = {
+        'Host': 'basha.cc',
+        'Sec-Ch-Ua': '"Chromium";v="131", "Not_A Brand";v="24"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.140 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-User': '?1',
+        'Sec-Fetch-Dest': 'document',
+        # 'Accept-Encoding': 'gzip, deflate, br',
+        'Priority': 'u=0, i',
+        'Connection': 'keep-alive',
     }
 
+    response = s.get('https://basha.cc/login', headers=headers)
+    # Parse the HTML content
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Find the meta tag with the name "csrf-token"
+    csrf = soup.find('meta', attrs={'name': 'csrf-token'}).get('content')
+
     headers = {
-        'accept': 'application/json, text/javascript, */*; q=0.01',
-        'accept-language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
-        'priority': 'u=1, i',
-        'referer': 'https://basha.cc/my/messages',
-        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'x-requested-with': 'XMLHttpRequest',
+        'Host': 'basha.cc',
+        # 'Content-Length': '123',
+        'Cache-Control': 'max-age=0',
+        'Sec-Ch-Ua': '"Chromium";v="131", "Not_A Brand";v="24"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Origin': 'https://basha.cc',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.140 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-User': '?1',
+        'Sec-Fetch-Dest': 'document',
+        'Referer': 'https://basha.cc/login',
+        'Priority': 'u=0, i',
+    }
+
+    data = {
+        '_token': csrf,
+        'email': 'abdomostafa230000@gmail.com',
+        'password': 'abdo1746',
+        'g-recaptcha-response': '',
+    }
+
+    response = s.post('https://basha.cc/login', headers=headers, data=data)
+
+    headers = {
+        'Host': 'basha.cc',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Sec-Ch-Ua': '"Chromium";v="131", "Not_A Brand";v="24"',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.140 Safari/537.36',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Dest': 'empty',
+        'Referer': 'https://basha.cc/my/messages',
+        'Priority': 'u=1, i',
     }
 
     params = {
-        'draw': '4',
+        'draw': '2',
         'columns[0][data]': 'country_iso_name',
         'columns[1][data]': 'destination_number',
         'columns[2][data]': 'source_number',
@@ -912,10 +963,10 @@ def get_panel_code_api13(number):
         'start': '0',
         'length': '10',
         'search[value]': str(number),
-        '_': '1737062423985',
+        '_': '1737063902157',
     }
 
-    response = requests.get('https://basha.cc/my/messages', params=params, cookies=cookies, headers=headers)
+    response = s.get('https://basha.cc/my/messages', params=params, headers=headers)
     data = response.json()
     if data['data']:
         last_message = data['data'][0]['message_text']
