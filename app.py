@@ -222,41 +222,41 @@ def verification_code_finder():
 
                 for number in numbers:
                     code = None
-                    if selected_api == '1':
+                    if selected_api == '+221':
                         code = get_panel_code_api1(number)
-                    elif selected_api == '2':
+                    elif selected_api == '+502':
                         code = get_panel_code_api2(number)
-                    elif selected_api == '3':
+                    elif selected_api == '+996\+855':
                         code = get_panel_code_api3(number)
-                    elif selected_api == '4':
+                    elif selected_api == '+260':
                         code = get_panel_code_api4(number)
-                    elif selected_api == '5':
+                    elif selected_api == 'Kyrgyzstan':
                         code = get_panel_code_api5(number)
-                    elif selected_api == '6':
+                    elif selected_api == 'Angola':
                         code = get_panel_code_api6(number)
-                    elif selected_api == '7':
+                    elif selected_api == '+856':
                         code = get_panel_code_api7(number)
-                    elif selected_api == '8':
+                    elif selected_api == '+60':
                         code = get_panel_code_api8(number)
-                    elif selected_api == '9':  # For +966 API
+                    elif selected_api == '+966':  # For +966 API
                         if not phpsessid:
                             flash('PHPSESSID is required for +966 API.', 'danger')
                             return render_template('verification.html')
                         code = get_panel_code_api9(number, phpsessid)  # Pass PHPSESSID
-                    elif selected_api == '10':
+                    elif selected_api == '+31':
                         code = get_panel_code_api10(number)
-                    elif selected_api == '11':
+                    elif selected_api == 'Netherlands':
                         code = get_panel_code_api11(number)
-                    elif selected_api == '12':
+                    elif selected_api == '+507':
                         code = get_panel_code_api12(number)
-                    elif selected_api == '13':
+                    elif selected_api == '+44':
                         code = get_panel_code_api13(number)
-                    elif selected_api == '14':
+                    elif selected_api == 'Iraq':
                         if not phpsessid:
                             flash('PHPSESSID is required for +966 API.', 'danger')
                             return render_template('verification.html')
                         code = get_panel_code_api14(number, phpsessid)  # Pass PHPSESSID
-                    elif selected_api == '15':
+                    elif selected_api == '+591':
                         code = get_panel_code_api15(number)
                     else:
                         flash('Please select an API.', 'danger')
@@ -711,6 +711,7 @@ def get_panel_code_api8(number):
     num1, num2 = map(int, re.findall(r'\d+', BeautifulSoup(response1.text, 'html.parser').get_text()))
     result = num1 + num2
     crlf = BeautifulSoup(response1.text, 'html.parser').find('input', {'name': 'crlf'})['value']  
+    print(response1.cookies)
     cookies = {
             'PHPSESSID': response1.cookies['PHPSESSID'],
         }
@@ -734,9 +735,10 @@ def get_panel_code_api8(number):
     }
 
     response2 = requests.post('http://93.190.143.35/ints/signin', cookies=cookies, headers=headers, data=data)
+    
 
     cookies = {
-        'PHPSESSID': response2.cookies['PHPSESSID'],
+        'PHPSESSID': response1.cookies['PHPSESSID'],
     }
 
     headers = {
@@ -769,43 +771,6 @@ def get_panel_code_api8(number):
     except:
         return None
 def get_panel_code_api9(number,phpsessid):
-    # headers = {
-    #     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    #     'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
-    #     'Cache-Control': 'max-age=0',
-    #     'Connection': 'keep-alive',
-    #     'Referer': 'http://109.236.84.81/ints/agent/SMSDashboard',
-    #     'Upgrade-Insecure-Requests': '1',
-    #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-    # }
-
-    # response1 = requests.get('http://109.236.84.81/ints/login', headers=headers)
-    # print(response1.cookies['PHPSESSID'])
-    # num1, num2 = map(int, re.findall(r'\d+', BeautifulSoup(response1.text, 'html.parser').get_text()))
-    # result = num1 + num2
-    # cookies = {
-    #         'PHPSESSID': response1.cookies['PHPSESSID'],
-    # }
-    # headers = {
-    #     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    #     'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
-    #     'Cache-Control': 'max-age=0',
-    #     'Connection': 'keep-alive',
-    #     'Content-Type': 'application/x-www-form-urlencoded',
-    #     'Origin': 'http://109.236.84.81',
-    #     'Referer': 'http://109.236.84.81/ints/login',
-    #     'Upgrade-Insecure-Requests': '1',
-    #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-    # }
-
-    # data = {
-    #     'username': 'Abdo1746',
-    #     'password': 'Abdo1746',
-    #     'capt': str(result),
-    # }
-
-    # response2 = requests.post('http://109.236.84.81/ints/signin', cookies=cookies, headers=headers, data=data,timeout=30)
-
     cookies = {
         'PHPSESSID': phpsessid,
     }
@@ -913,8 +878,9 @@ def get_panel_code_api12(number):
         return None
 def get_panel_code_api13(number):
     cookies = {
-        'XSRF-TOKEN': 'eyJpdiI6ImpxTmxLaUsrTUlNZjBCWXFWVWhGQlE9PSIsInZhbHVlIjoiVkdNWnYvM2VxSXF1enlLd0oxM2laeElwRDlPNWIzTmcvWHlBbHkyRXhENnFaWWtBUUNTZ1VpUHpYd0JpbWVNdFBLeUFCc05xL2JXWEpkNGcvdGllUUtIdjJQOHlVdnZ3dzBLeitUc1NiUlB1ZUxhTHV0OWtBbmN4Q3BzOFlaczMiLCJtYWMiOiIwM2Q5OThjYmMwY2ZiMWU4ZmZjYmM3ZGQ2ZjcyMTczNzUyNTE2YjRmOGFiMmFjN2U3YzY4YThkYjhjNDhiYWFjIiwidGFnIjoiIn0%3D',
-        'basha_iprn_vas_session': 'eyJpdiI6IjhWUmZ0M2xKQ09aV0NSaGI5ZWt0NGc9PSIsInZhbHVlIjoiOUNBaUNERzFJRWRtT00yRlV2SVJDQzNlTnFDZlhCRnlWVnYrUHlwb3NmZ2RXUWFvVzJOWERqMU9HckcxNEQyclpNcmR5VFZFOXQ3THRENU1wazZUQXVlRVpwTVBVbm1icmU4K3RuMEp6NVBNbnNwVzF3dURxb2dUSjBhY05lVVAiLCJtYWMiOiI0NDYxMWMwMzZmOWZlNmI1Y2FiNWZiNTcyNjAxNDZmMzI4MTJmNWRhNWZjOGFmMmFkZGZmMjlmNzY3NjgwMGQ0IiwidGFnIjoiIn0%3D',
+        'remember_web_59ba36addc2b2f9401580f014c7f58ea4e30989d': 'eyJpdiI6ImxGRG5QRTNFVzFDOHE3L2E4bnZuMEE9PSIsInZhbHVlIjoicXVNMGxVL2NOU2R5VENMbW9VWUp1cWFPNzNadVJWeld1L0dTNVN0SjlBZVNiM3N6ejVPcU5JUExBTUFaMG50VGlMR1lqR1ZwbUZWckZ1Z3BtZG80SHNUTDUvbXRkWGszQ0NQWVFzeDFQd1VpUlFGSzV3ZnRibmpTQTUreVF5ZlJtaExWNTI0WEVtRFBFZkFKMHJoT2F2WEc5RjQxVVBSRDNoMGlVT1YwNnZiOHM1bUNGQ0lOY0Y1UE5SbUVBNWt0MVJ1Tm4xV3RZdk9FdmNyK25uckEzSjI3L09sOGJySStoejBvMTNqUnozWT0iLCJtYWMiOiJhZWMyYzFjMDQ2ZjhmOWQ4MzNjNWJlMjgyNTM4N2ZiMDkwMGY5NTE2MWVhY2ZmM2YyYzU3ZDMwYTEzMTQ2NjVkIiwidGFnIjoiIn0%3D',
+        'XSRF-TOKEN': 'eyJpdiI6InZWVG5wcktzRUtwVi9zL0hWVDVET3c9PSIsInZhbHVlIjoiM2JHOWwwMktBTnMxd21Mck14VzlJNVpoRlVJcmhHbkUxYXEvK2t0b2g4V2Y1ckhJNmpwZTVPUlR0NmdpRXhpYXVURXNReEhGZWZmNzZ4UU9LVkl2aWJ3MnpSZ2xBOElQbFEza21XR0R5cFNncktHTDB2YkVMKzJiRDJZOG9PRlAiLCJtYWMiOiJmMWZhYTM0NmU4NzdkY2UzYzYzODllY2E5Yzg3NDY5YjM3YzY2ZTYwMzE0Yjc4N2UzMzY5YzM2MzBmNTk0MzU2IiwidGFnIjoiIn0%3D',
+        'basha_iprn_vas_session': 'eyJpdiI6InBIK2tiYkJXU1owd1dORUlGd2N5OVE9PSIsInZhbHVlIjoiQUpjTTUzbXpDdFRaYjgrOHl6NE5xZ3QxbkQ3U0tDQm1ZbUFnTlV2YmlIK2NydDNIS3ZhRWFQWnFpRVBFRmtzL0l4YWFyeEthVTJMSkhuS2s3NG5ucmkvdVkvVkxrNStITjZETlNrQVVKMytrMkI5YmdYNHYvL2RMakNVUXRtREEiLCJtYWMiOiIyZjQ2ODJlMTBmMDRkN2Q3ZGRhYmRlMzg4Yjk1N2U1NTkzNGMxMDBiZTk4ZDM4N2RiOWQyNDUxYjJmYzZjNWUxIiwidGFnIjoiIn0%3D',
     }
 
     headers = {
@@ -946,7 +912,7 @@ def get_panel_code_api13(number):
         'start': '0',
         'length': '10',
         'search[value]': str(number),
-        '_': '1735033239633',
+        '_': '1737062423985',
     }
 
     response = requests.get('https://basha.cc/my/messages', params=params, cookies=cookies, headers=headers)
@@ -1005,9 +971,9 @@ def get_panel_code_api15(number):
     # Map of IP addresses to tokens
     ip_token_map = {
         '105.35.254.151': 'jPFbLQPZQ0G2LpybTGPFPQ',
-        '52.15.118.168': 'HPkvpXMGSByJcKFuBHfg9g',
-        '3.129.111.220': 'z93tBalmQo237lOmFqo-Mg',
-        '3.134.238.10': 'ZgDrlp1MSPKrQooQ7aeiqg',
+        '52.15.118.168': 'DJCeB355SXSkrq5GAm3znA',
+        '3.129.111.220': 'e83FzqWdRB-1aEPiC1yndg',
+        '3.134.238.10': 'c6SYMh7PTHOFMKJ1vZ0zOg',
     }
 
     # Get the current IP address
@@ -1019,7 +985,6 @@ def get_panel_code_api15(number):
 
     # Get the token based on the IP
     token = ip_token_map.get(ip)
-    print(token)
     if not token:
         return "Token not found for this IP address."
     now = datetime.now(timezone.utc)
@@ -1048,7 +1013,6 @@ def get_panel_code_api15(number):
     }
 
     response = requests.post('https://api.premiumy.net/v1.0', headers=headers, json=json_data)
-    print(response.text)
     if response.status_code == 200:
         data = response.json()
         mdr_full_list = data['result']['mdr_full_list']
