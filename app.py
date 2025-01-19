@@ -258,6 +258,8 @@ def verification_code_finder():
                         code = get_panel_code_api14(number, phpsessid)  # Pass PHPSESSID
                     elif selected_api == '+591':
                         code = get_panel_code_api15(number)
+                    elif selected_api == 'PANAMA':
+                        code = get_panel_code_api16(number)
                     else:
                         flash('Please select an API.', 'danger')
                         return render_template('verification.html')
@@ -841,6 +843,7 @@ def get_panel_code_api12(number):
         '52.15.118.168': 'HUS83ojxYHmsXyJPb0XUui9p5FY3V2pNPdoN6TBK47f19650',
         '3.129.111.220': 'kbEKtRHGNbGXJrjSs02D5jk27GWJNcLAjZwDm7mdb3eebafc',
         '3.134.238.10': 'tqimpuIULab9dtcbRssavrhuShijdNupBzjhNnxa62d80b40',
+        '105.42.216.18':'OnmF7SxuOaZNJDj4OMGZZN3J3iQzHviXbLiPbhn5fb66f0b1'
     }
 
     # Get the current IP address
@@ -862,20 +865,21 @@ def get_panel_code_api12(number):
     }
 
     # Send request
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()  # Raise HTTPError for bad responses
-        message = response.json()['message']
+    # try:
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()  # Raise HTTPError for bad responses
+    print(response.json())
+    message = response.json()['message']
 
-        # Use regex to extract the code
-        match = re.search(r'\d+', message)
-        if match:
-            code = match.group()
-            return code
-        else:
-            return None
-    except requests.exceptions.RequestException as e:
+    # Use regex to extract the code
+    match = re.search(r'\d+', message)
+    if match:
+        code = match.group()
+        return code
+    else:
         return None
+    # except requests.exceptions.RequestException as e:
+    #     return None
 def get_panel_code_api13(number):
     s = requests.Session()
     headers = {
@@ -1078,7 +1082,102 @@ def get_panel_code_api15(number):
             return None
     else:
         return None
+    
+def get_panel_code_api16(number):
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Connection': 'keep-alive',
+        'Referer': 'https://textnvoice.com/agent/SMSCDRStats',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+    }
 
+    response1 = requests.get('https://textnvoice.com/login', headers=headers)
+    soup = BeautifulSoup(response1.text, 'html.parser')
+
+    # Locate the <label> tag for the captcha
+    label_text = soup.find('label', {'for': 'captcha'}).text
+    numbers = re.findall(r'\d+', label_text)
+    result = int(numbers[0]) + int(numbers[1])
+    cookies = {
+        'PHPSESSID': response1.cookies['PHPSESSID'],
+    }
+
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Origin': 'https://textnvoice.com',
+        'Referer': 'https://textnvoice.com/login',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+    }
+
+    data = {
+        'username': 'abdo1746',
+        'password': 'abdo174612',
+        'capt': str(result),
+    }
+
+    response = requests.post('https://textnvoice.com/signin', cookies=cookies, headers=headers, data=data)
+
+
+
+    cookies = {
+        'PHPSESSID': response1.cookies['PHPSESSID'],
+    }
+
+    headers = {
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Connection': 'keep-alive',
+        'Referer': 'https://textnvoice.com/agent/SMSCDRStats',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-origin',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'X-Requested-With': 'XMLHttpRequest',
+        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+    }
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    response = requests.get(
+        f'https://textnvoice.com/agent/res/data_smscdr.php?fdate1=2025-01-19%2000:00:00&fdate2={current_date}%2023:59:59&frange=&fclient=&fnum={number}&fcli=&fgdate=&fgmonth=&fgrange=&fgclient=&fgnumber=&fgcli=&fg=0&sEcho=1&iColumns=9&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=25&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=1737320874710',
+        cookies=cookies,
+        headers=headers,
+    )
+    try:
+        data = json.loads(response.text)
+        # Extract the message
+        message_text = data['aaData'][0][5]
+        # Search for the verification code
+        verification_code = re.search(r"\b\d{5,6}\b", message_text)
+        if verification_code:
+            return verification_code.group()
+        else:
+            return None
+    except:
+        return None
+    
 def get_verification_code3(number, user, password):
 
     headers = {
