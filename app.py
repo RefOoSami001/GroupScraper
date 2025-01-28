@@ -214,7 +214,6 @@ def verification_code_finder():
                 numbers = request.form['numbers'].split()
                 selected_api = request.form.get('api')
                 phpsessid = request.form.get('phpsessid', None)  # Get PHPSESSID if provided
-                print(phpsessid)
 
                 total_success = 0
                 total_fail = 0
@@ -262,6 +261,8 @@ def verification_code_finder():
                         code = get_panel_code_api16(number)
                     elif selected_api == '+2':
                         code = get_panel_code_api17(number)
+                    elif selected_api == '+92':
+                        code = get_panel_code_api18(number)
                     else:
                         flash('Please select an API.', 'danger')
                         return render_template('verification.html')
@@ -715,7 +716,6 @@ def get_panel_code_api8(number):
     num1, num2 = map(int, re.findall(r'\d+', BeautifulSoup(response1.text, 'html.parser').get_text()))
     result = num1 + num2
     crlf = BeautifulSoup(response1.text, 'html.parser').find('input', {'name': 'crlf'})['value']  
-    print(response1.cookies)
     cookies = {
             'PHPSESSID': response1.cookies['PHPSESSID'],
         }
@@ -870,7 +870,6 @@ def get_panel_code_api12(number):
     # try:
     response = requests.get(url, headers=headers)
     response.raise_for_status()  # Raise HTTPError for bad responses
-    print(response.json())
     message = response.json()['message']
 
     # Use regex to extract the code
@@ -1274,6 +1273,97 @@ def get_panel_code_api17(number):
     try:
         soup = BeautifulSoup(response.text, 'html.parser')
         message_text = soup.find('td', class_='truncate cdrs-pjax').get_text(strip=True)
+        verification_code = re.search(r"\b\d{5,6}\b", message_text)
+        if verification_code:
+            return verification_code.group()
+        else:
+            return None
+    except:
+        return None
+def get_panel_code_api18(number):
+    s = requests.Session()
+    # Ensure the number does not start with a '+' sign
+    if number.startswith('+'):
+        number = number[1:]  # Remove the '+' sign
+    else:
+        number = number  # Keep it as is
+    headers = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'cache-control': 'max-age=0',
+        'content-type': 'application/x-www-form-urlencoded',
+        # 'cookie': 'PHPSESSID=rj4gtfjlcn053k48m31ul6msmc222s4c38fudukadf4q86cp2e50',
+        'origin': 'https://mediateluk.com',
+        'priority': 'u=0, i',
+        'referer': 'https://mediateluk.com/sms/index.php?opt=shw_sts_fin',
+        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+        'sec-ch-ua-arch': '"x86"',
+        'sec-ch-ua-bitness': '"64"',
+        'sec-ch-ua-full-version': '"131.0.6778.267"',
+        'sec-ch-ua-full-version-list': '"Google Chrome";v="131.0.6778.267", "Chromium";v="131.0.6778.267", "Not_A Brand";v="24.0.0.0"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-model': '""',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-ch-ua-platform-version': '"19.0.0"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    }
+
+    params = {
+        'login': '1',
+    }
+
+    data = {
+        'user': '1926',
+        'password': 'abdo1024',
+    }
+
+    response = s.post('https://mediateluk.com/sms/index.php', params=params, headers=headers, data=data)
+    headers = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'cache-control': 'max-age=0',
+        'content-type': 'application/x-www-form-urlencoded',
+        'origin': 'https://mediateluk.com',
+        'priority': 'u=0, i',
+        'referer': 'https://mediateluk.com/sms/index.php?opt=shw_sts_today',
+        'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+        'sec-ch-ua-arch': '"x86"',
+        'sec-ch-ua-bitness': '"64"',
+        'sec-ch-ua-full-version': '"131.0.6778.267"',
+        'sec-ch-ua-full-version-list': '"Google Chrome";v="131.0.6778.267", "Chromium";v="131.0.6778.267", "Not_A Brand";v="24.0.0.0"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-model': '""',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-ch-ua-platform-version': '"19.0.0"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    }
+
+    params = {
+        'opt': 'shw_sts_today_det',
+    }
+
+    data = {
+        'ddi': f'+{number}',
+        'oad': 'Telegram',
+    }
+
+    response = s.post('https://mediateluk.com/sms/index.php', params=params, headers=headers, data=data)
+    # Parse the HTML
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Find the <tr> with class 'table_line_even'
+    try:
+        message_text = soup.find('tr', class_='table_line_even').find_all('td')[-1].get_text(strip=True)
         verification_code = re.search(r"\b\d{5,6}\b", message_text)
         if verification_code:
             return verification_code.group()
