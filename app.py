@@ -263,6 +263,8 @@ def verification_code_finder():
                         code = get_panel_code_api17(number)
                     elif selected_api == '+92':
                         code = get_panel_code_api18(number)
+                    elif selected_api == '+447':
+                        code = get_panel_code_api19(number)
                     else:
                         flash('Please select an API.', 'danger')
                         return render_template('verification.html')
@@ -1364,6 +1366,113 @@ def get_panel_code_api18(number):
     # Find the <tr> with class 'table_line_even'
     try:
         message_text = soup.find('tr', class_='table_line_even').find_all('td')[-1].get_text(strip=True)
+        verification_code = re.search(r"\b\d{5,6}\b", message_text)
+        if verification_code:
+            return verification_code.group()
+        else:
+            return None
+    except:
+        return None
+def get_panel_code_api19(number):
+    s = requests.Session()
+    # Ensure the number does not start with a '+' sign
+    if number.startswith('+'):
+        number = number[1:]  # Remove the '+' sign
+    else:
+        number = number  # Keep it as is
+    headers = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'cache-control': 'max-age=0',
+        # 'cookie': 'advanced-frontend=ntmb2edb8manok55ul7cui67d8',
+        'priority': 'u=0, i',
+        'referer': 'https://smsportal.live/dashboard',
+        'sec-ch-ua': '"Not A(Brand";v="8", "Chromium";v="132", "Google Chrome";v="132"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
+    }
+
+    response = s.get('https://smsportal.live/user-management/auth/login', headers=headers)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Find the input element by its name attribute
+    csrf_value = soup.find('input', {'name': '_csrf-frontend'})['value']
+    cookies = {
+        '_csrf-frontend': csrf_value,
+    }
+
+    headers = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'cache-control': 'max-age=0',
+        'content-type': 'application/x-www-form-urlencoded',
+        # 'cookie': 'advanced-frontend=splg0q84rsbo5mhj22k8rjsr7m; _csrf-frontend=9688879fa671dd457c9084d3e116915a12fffb89c3d5931115b988cb6a695d2ca%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22_csrf-frontend%22%3Bi%3A1%3Bs%3A32%3A%22qiFqWipr_XGtMaQFpv342jE0MvEkP6Oj%22%3B%7D',
+        'origin': 'https://smsportal.live',
+        'priority': 'u=0, i',
+        'referer': 'https://smsportal.live/user-management/auth/login',
+        'sec-ch-ua': '"Not A(Brand";v="8", "Chromium";v="132", "Google Chrome";v="132"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
+    }
+
+    data = {
+        '_csrf-frontend': csrf_value,
+        'LoginForm[username]': 'Abdo17461746',
+        'LoginForm[password]': 'abdo1746',
+        'LoginForm[rememberMe]': '0',
+    }
+
+    response = s.post('https://smsportal.live/user-management/auth/login', cookies=cookies, headers=headers, data=data)
+    headers = {
+        'accept': 'text/html, */*; q=0.01',
+        'accept-language': 'ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        # 'cookie': 'advanced-frontend=lodklpvlafruu15f6fs66hr2jd; _csrf-frontend=30007d217a6a3b2e4fc1bd9f75f2977e0ddb89143aa40d37b0ff67fe9e116a68a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22_csrf-frontend%22%3Bi%3A1%3Bs%3A32%3A%22QUFMz7W6Ub49oajqpWKV96ZU-elP6K8r%22%3B%7D',
+        'priority': 'u=1, i',
+        'referer': 'https://smsportal.live/sms-records/index?PartitionSmsInboundAllocationSearch%5Bdate_range%5D=2025-02-04+00%3A00%3A00+-+2025-02-04+23%3A59%3A59&PartitionSmsInboundAllocationSearch%5Bpartition_crm_id_client%5D=',
+        'sec-ch-ua': '"Not A(Brand";v="8", "Chromium";v="132", "Google Chrome";v="132"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
+        'x-csrf-token': 'IJVFMYDtZ_IJnMryOiDMxx0hacwOeh_9vQbD9_qowWNxwAN8-towxFz-_stVQaa2bXYimjdMRaiQY6-nzOP5EQ==',
+        'x-pjax': 'true',
+        'x-pjax-container': '#cdrs-pjax-pjax',
+        'x-requested-with': 'XMLHttpRequest',
+    }
+
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    params = {
+        'per-page': '50',
+        'PartitionSmsInboundAllocationSearch[partition_crm_id]': '',
+        'PartitionSmsInboundAllocationSearch[partition_crm_id_client]': '',
+        'PartitionSmsInboundAllocationSearch[source_addr]': '',
+        'PartitionSmsInboundAllocationSearch[destination_addr]': str(number),
+        'PartitionSmsInboundAllocationSearch[smpp_status]': '',
+        'PartitionSmsInboundAllocationSearch[short_message]': '',
+        'PartitionSmsInboundAllocationSearch[date_range]': f'2025-01-25 00:00:00 - {current_date} 23:59:59',
+        '_pjax': '#cdrs-pjax-pjax',
+    }
+
+    response = s.get('https://smsportal.live/sms-records/index', params=params, cookies=cookies, headers=headers)
+
+    try:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        message_text = soup.find('td', class_='truncate cdrs-pjax').get_text(strip=True)
         verification_code = re.search(r"\b\d{5,6}\b", message_text)
         if verification_code:
             return verification_code.group()
