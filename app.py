@@ -847,7 +847,7 @@ def get_panel_code_api12(number):
         '52.15.118.168': 'HUS83ojxYHmsXyJPb0XUui9p5FY3V2pNPdoN6TBK47f19650',
         '3.129.111.220': 'kbEKtRHGNbGXJrjSs02D5jk27GWJNcLAjZwDm7mdb3eebafc',
         '3.134.238.10': 'tqimpuIULab9dtcbRssavrhuShijdNupBzjhNnxa62d80b40',
-        '105.42.216.18':'OnmF7SxuOaZNJDj4OMGZZN3J3iQzHviXbLiPbhn5fb66f0b1'
+        '105.43.53.195':'B29XZwy24VSflXTWPpdhGm2FoTmHfv0JMTLV0Bm043d8c432'
     }
 
     # Get the current IP address
@@ -869,20 +869,20 @@ def get_panel_code_api12(number):
     }
 
     # Send request
-    # try:
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()  # Raise HTTPError for bad responses
-    message = response.json()['message']
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        message = response.json()['message']
 
-    # Use regex to extract the code
-    match = re.search(r'\d+', message)
-    if match:
-        code = match.group()
-        return code
-    else:
+        # Use regex to extract the code
+        match = re.search(r'\d+', message)
+        if match:
+            code = match.group()
+            return code
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
         return None
-    # except requests.exceptions.RequestException as e:
-    #     return None
 def get_panel_code_api13(number):
     s = requests.Session()
     headers = {
