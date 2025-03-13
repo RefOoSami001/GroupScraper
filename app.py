@@ -1032,10 +1032,12 @@ def get_panel_code_api15(number):
 
     # Map of IP addresses to tokens
     ip_token_map = {
-        '105.35.254.151': 'jPFbLQPZQ0G2LpybTGPFPQ',
-        '52.15.118.168': 'DJCeB355SXSkrq5GAm3znA',
-        '3.129.111.220': 'e83FzqWdRB-1aEPiC1yndg',
-        '3.134.238.10': 'c6SYMh7PTHOFMKJ1vZ0zOg',
+        '44.226.145.213': 'HyawVk9yQxaax681QglwdQ',
+        '54.187.200.255': 'M04xgNokTeGHLZVaJPpacQ',
+        '34.213.214.55': 'vn0ENuJiRtiWZGeJn0ylbg',
+        '35.164.95.156': 'V2Uh6p7sTkGY3hslVUvoEg',
+        '44.230.95.183': 'y9a8WlyLQSun_tlaQU3REw',
+        '44.229.200.200': 'v3niIZ8lQrWelZ62ElQgSg',
     }
 
     # Get the current IP address
