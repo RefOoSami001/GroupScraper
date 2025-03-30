@@ -287,6 +287,8 @@ def verification_code_finder():
                         code = get_panel_code_api20(number)
                     elif selected_api == '+93':
                         code = get_panel_code_api21(number)
+                    elif selected_api == '+595':
+                        code = get_panel_code_api22(number)
                     else:
                         flash('Please select an API.', 'danger')
                         return render_template('verification.html')
@@ -1614,6 +1616,22 @@ def get_panel_code_api21(number):
         else:
             return None
     except:
+        return None
+
+def get_panel_code_api22(number):
+    try:
+        response = requests.get('https://panelsms.onrender.com/api_data')
+        if response.status_code == 200:
+            data = response.json()  # Convert response to JSON
+
+            # Search for the number in the data list
+            for entry in data:
+                if entry.get("phone") == number:
+                    return entry.get("code")  # Return the verification code if found
+            return None  # Number not found
+        else:
+            return None
+    except Exception as e:
         return None
 
 def get_verification_code3(number, user, password):
