@@ -308,7 +308,7 @@
                 padding: 15px;
             }
         }
-    </style>z
+    </style>
 </head>
 
 <body>
@@ -399,9 +399,15 @@
                         <td>{{ number }}</td>
                         <td>
                             {% if code and code.startswith('http') %}
-                            <a href="{{ code }}" target="_blank" class="btn btn-primary btn-sm">
-                                <i class="fas fa-volume-up"></i> Voice
-                            </a>
+                            <div class="d-flex align-items-center">
+                                <button onclick="toggleAudio(this, '{{ code }}')" class="btn btn-primary btn-sm me-2">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <audio style="display: none;">
+                                    <source src="{{ code }}" type="audio/wav">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>
                             {% else %}
                             {{ code }}
                             {% endif %}
@@ -509,6 +515,44 @@
                 }
             },
             "retina_detect": true
+        });
+
+        let currentlyPlaying = null;
+
+        function toggleAudio(button, url) {
+            const audioElement = button.nextElementSibling;
+            const icon = button.querySelector('i');
+
+            // If there's another audio playing, stop it
+            if (currentlyPlaying && currentlyPlaying !== audioElement) {
+                currentlyPlaying.pause();
+                currentlyPlaying.currentTime = 0;
+                currentlyPlaying.previousElementSibling.querySelector('i').className = 'fas fa-play';
+            }
+
+            if (audioElement.paused) {
+                audioElement.play();
+                icon.className = 'fas fa-pause';
+                currentlyPlaying = audioElement;
+            } else {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+                icon.className = 'fas fa-play';
+                currentlyPlaying = null;
+            }
+        }
+
+        // Add event listeners to handle audio completion
+        document.addEventListener('DOMContentLoaded', function () {
+            const audioElements = document.getElementsByTagName('audio');
+            Array.from(audioElements).forEach(audio => {
+                audio.addEventListener('ended', function () {
+                    const button = this.previousElementSibling;
+                    const icon = button.querySelector('i');
+                    icon.className = 'fas fa-play';
+                    currentlyPlaying = null;
+                });
+            });
         });
     </script>
 </body>
