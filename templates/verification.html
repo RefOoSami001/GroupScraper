@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Include Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <!-- Include Particles.js -->
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <style>
@@ -21,6 +24,7 @@
             font-family: 'Poppins', sans-serif;
             color: #fff;
         }
+
         /* Custom Input Field Styling */
         #phpsessid {
             background-color: rgba(255, 255, 255, 0.1);
@@ -50,6 +54,7 @@
         #phpsessid:hover {
             border-color: rgba(255, 255, 255, 0.4);
         }
+
         /* Particles.js Background */
         #particles-js {
             position: absolute;
@@ -150,7 +155,8 @@
             overflow: hidden;
         }
 
-        table th, table td {
+        table th,
+        table td {
             padding: 12px;
             text-align: left;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -210,9 +216,15 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -239,30 +251,36 @@
             }
 
             table {
-                min-width: 100%; /* Set minimum width to 100% for better scrolling */
+                min-width: 100%;
+                /* Set minimum width to 100% for better scrolling */
                 border-collapse: separate;
-                border-spacing: 0 8px; /* Add space between rows */
+                border-spacing: 0 8px;
+                /* Add space between rows */
             }
 
             table th,
             table td {
                 padding: 12px 8px;
-                font-size: 14px; /* Adjust font size for better readability */
+                font-size: 14px;
+                /* Adjust font size for better readability */
                 text-align: left;
-                white-space: nowrap; /* Prevent wrapping in narrow columns */
+                white-space: nowrap;
+                /* Prevent wrapping in narrow columns */
             }
 
             table th {
                 background-color: #007bff;
                 color: #ffffff00;
-                position: sticky; /* Keep headers visible while scrolling */
+                position: sticky;
+                /* Keep headers visible while scrolling */
                 top: 0;
                 z-index: 2;
             }
 
             table tr {
                 background-color: rgba(255, 255, 255, 0.05);
-                border-radius: 10px; /* Add rounded corners to rows */
+                border-radius: 10px;
+                /* Add rounded corners to rows */
             }
 
             table tr:nth-child(even) {
@@ -290,9 +308,9 @@
                 padding: 15px;
             }
         }
-
-    </style>
+    </style>z
 </head>
+
 <body>
     <div id="particles-js"></div>
     <div class="container mt-5">
@@ -337,7 +355,8 @@
                     </select>
                     <div class="mb-3" id="phpsessid-field" style="display: none;">
                         <label for="phpsessid" class="form-label">PHPSESSID</label>
-                        <input type="text" id="phpsessid" name="phpsessid" class="form-control" placeholder="Enter PHPSESSID">
+                        <input type="text" id="phpsessid" name="phpsessid" class="form-control"
+                            placeholder="Enter PHPSESSID">
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">
@@ -372,14 +391,22 @@
                     <tr>
                         <th>Phone Number</th>
                         <th>Code</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for number, code in results['codes'].items() %}
-                        <tr>
-                            <td>{{ number }}</td>
-                            <td>{{ code }}</td>
-                        </tr>
+                    <tr>
+                        <td>{{ number }}</td>
+                        <td>{{ code }}</td>
+                        <td>
+                            {% if code and code.startswith('http') %}
+                            <a href="{{ code }}" target="_blank" class="btn btn-primary btn-sm">
+                                <i class="fas fa-volume-up"></i> Voice
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -485,4 +512,5 @@
         });
     </script>
 </body>
+
 </html>
