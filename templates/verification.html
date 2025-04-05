@@ -391,19 +391,19 @@
                     <tr>
                         <th>Phone Number</th>
                         <th>Code</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for number, code in results['codes'].items() %}
                     <tr>
                         <td>{{ number }}</td>
-                        <td>{{ code }}</td>
                         <td>
                             {% if code and code.startswith('http') %}
                             <a href="{{ code }}" target="_blank" class="btn btn-primary btn-sm">
                                 <i class="fas fa-volume-up"></i> Voice
                             </a>
+                            {% else %}
+                            {{ code }}
                             {% endif %}
                         </td>
                     </tr>
