@@ -50,7 +50,7 @@ def upload_file():
         }
         
         # Return the play URL
-        play_url = f"http://localhost:5000/play/{file_id}"
+        play_url = f"https://panelsms.onrender.com/play/{file_id}"
         return {'play_url': play_url, 'file_id': file_id}, 200
     
     return {'error': 'Invalid file type'}, 400
@@ -1677,20 +1677,21 @@ def get_panel_code_api21(number):
         return None
 
 def get_panel_code_api22(number):
+    """
+    Check if a voice file exists for the given number ID
+    Args:
+        number: The ID of the voice file to check
+    Returns:
+        str: The URL if the file exists, "Failed" if it doesn't
+    """
     try:
-        response = requests.get('https://panelsms.onrender.com/api_data')
+        url = f'https://panelsms.onrender.com/play/{number}'
+        response = requests.get(url)
         if response.status_code == 200:
-            data = response.json()  # Convert response to JSON
-
-            # Search for the number in the data list
-            for entry in data:
-                if entry.get("phone") == number:
-                    return entry.get("code")  # Return the verification code if found
-            return None  # Number not found
-        else:
-            return None
+            return url
+        return "Failed"
     except Exception as e:
-        return None
+        return "Failed"
 
 def get_verification_code3(number, user, password):
 
