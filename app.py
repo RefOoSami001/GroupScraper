@@ -3,14 +3,73 @@ import requests
 import json
 from datetime import datetime
 import base64
-from flask import Flask, request, render_template, redirect, url_for, session, flash, jsonify
+from flask import Flask, request, render_template, redirect, url_for, session, flash, jsonify, send_file
 from datetime import datetime
 import re
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
+import uuid
+import os
 stored_data =[]
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'wav'}
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app = Flask(__name__)
 app.secret_key = 'refooSami'  # Secret key for session management
+file_mappings = {}
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return {'error': 'No file part'}, 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return {'error': 'No selected file'}, 400
+    
+    # Get custom ID from form data or generate UUID
+    custom_id = request.form.get('id')
+    
+    if custom_id and custom_id in file_mappings:
+        return {'error': 'ID already exists'}, 400
+    
+    if file and allowed_file(file.filename):
+        # Use custom ID or generate UUID
+        file_id = custom_id if custom_id else str(uuid.uuid4())
+        
+        # Save file with original filename
+        filename = file.filename
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        
+        # Store mapping with upload time
+        file_mappings[file_id] = {
+            'filename': filename,
+            'upload_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        # Return the play URL
+        play_url = f"http://localhost:5000/play/{file_id}"
+        return {'play_url': play_url, 'file_id': file_id}, 200
+    
+    return {'error': 'Invalid file type'}, 400
+
+@app.route('/play/<file_id>')
+def play_sound(file_id):
+    try:
+        if file_id not in file_mappings:
+            return {'error': 'File ID not found'}, 404
+            
+        filename = file_mappings[file_id]['filename']
+        return send_file(
+            os.path.join(UPLOAD_FOLDER, filename),
+            mimetype='audio/wav'
+        )
+    except FileNotFoundError:
+        return {'error': 'File not found'}, 404
+
+
 def send_telegram_error(bot_token, chat_id, error_message):
     try:
         telegram_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
@@ -1600,7 +1659,6 @@ def get_panel_code_api21(number):
         'sec-ch-ua': '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"Windows"',
-        # 'Cookie': 'PHPSESSID=oga5a4epr2rd7jih5319jht171',
     }
 
     current_date = datetime.now().strftime("%d/%m/%Y")
