@@ -9,7 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <style>
         body {
-            background-color: #e7ecf1;;
+            background-color: #e7ecf1;
+            ;
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
@@ -93,12 +94,12 @@
             font-weight: 500;
         }
 
-        .form-check-input:checked + .form-check-label::before {
+        .form-check-input:checked+.form-check-label::before {
             background-color: #007bff;
             border-color: #007bff;
         }
 
-        .form-check-input:focus + .form-check-label::before {
+        .form-check-input:focus+.form-check-label::before {
             box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
         }
 
@@ -158,17 +159,20 @@
         <form id="searchForm" method="post" action="{{ url_for('search_user') }}">
             <div class="form-group">
                 <label for="search_value">Search:</label>
-                <input type="text" class="form-control" name="search_value" id="search_value" required aria-label="Search Value">
+                <input type="text" class="form-control" name="search_value" id="search_value" required
+                    aria-label="Search Value">
             </div>
 
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="search_type" id="search_by_username" value="username" checked aria-label="Search by Username">
+                <input class="form-check-input" type="radio" name="search_type" id="search_by_username" value="username"
+                    checked aria-label="Search by Username">
                 <label class="form-check-label" for="search_by_username">
                     Search by Username
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="search_type" id="search_by_number" value="number" aria-label="Search by Number">
+                <input class="form-check-input" type="radio" name="search_type" id="search_by_number" value="number"
+                    aria-label="Search by Number">
                 <label class="form-check-label" for="search_by_number">
                     Search by Number
                 </label>
@@ -221,22 +225,26 @@
                 <p>Total Failed: {{ total_failed }}</p>
             </div>
             {% endif %}
-            <table class="table table-striped mt-3">
-                <thead class="thead-dark">
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Number</th>
+                        <th>Username</th>
+                        <th>Phone Number</th>
                         <th>Status</th>
+                        {% if has_timestamp %}
                         <th>Timestamp</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for entry in number_data %}
                     <tr>
-                        <td>{{ entry[0] }}</td> <!-- ID -->
-                        <td>{{ entry[1] }}</td> <!-- Number -->
-                        <td>{{ entry[2] }}</td> <!-- Status -->
-                        <td>{{ entry[3] }}</td> <!-- Timestamp -->
+                        <td>{{ entry[0] }}</td>
+                        <td>{{ entry[1] }}</td>
+                        <td>{{ entry[2] }}</td>
+                        {% if has_timestamp %}
+                        <td>{{ entry[3] }}</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

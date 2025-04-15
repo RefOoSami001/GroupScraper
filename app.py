@@ -149,12 +149,27 @@ def get_user_data(username):
 def get_number_data(numbers):
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
-    placeholders = ','.join('?' for _ in numbers)
-    query = f'SELECT username, number, status, timestamp FROM user_data WHERE number IN ({placeholders})'
-    cursor.execute(query, numbers)
-    data = cursor.fetchall()
-    conn.close()
-    return data
+    try:
+        # First check if the timestamp column exists
+        cursor.execute("PRAGMA table_info(user_data)")
+        columns = [column[1] for column in cursor.fetchall()]
+        has_timestamp = 'timestamp' in columns
+        
+        placeholders = ','.join('?' for _ in numbers)
+        if has_timestamp:
+            query = f'SELECT username, number, status, timestamp FROM user_data WHERE number IN ({placeholders})'
+        else:
+            query = f'SELECT username, number, status FROM user_data WHERE number IN ({placeholders})'
+        
+        cursor.execute(query, numbers)
+        data = cursor.fetchall()
+        return data
+    except Exception as e:
+        print(f"Error in get_number_data: {str(e)}")
+        return []
+    finally:
+        conn.close()
+
 @app.route('/manage_users', methods=['GET', 'POST'])
 def add_user_route():
     if request.method == 'POST':
@@ -230,6 +245,8 @@ def search_user():
             numbers = re.split(r'[,\s]+', search_value)
             number_data = get_number_data(numbers)
             if number_data:
+                # Check if timestamp is present in the results
+                has_timestamp = len(number_data[0]) > 3 if number_data else False
                 total_success = sum(1 for entry in number_data if entry[2] != 'Failed')
                 total_failed = sum(1 for entry in number_data if entry[2] == 'Failed')
 
@@ -239,7 +256,8 @@ def search_user():
                     search_type='number',
                     search_value=search_value,
                     total_success=total_success,
-                    total_failed=total_failed
+                    total_failed=total_failed,
+                    has_timestamp=has_timestamp
                 )
             else:
                 flash('No data found for these numbers', 'danger')
