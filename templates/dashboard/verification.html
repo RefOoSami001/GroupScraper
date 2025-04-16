@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Code Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #858796;
+            --success-color: #1cc88a;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --info-color: #36a0f2;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            padding: 0.5rem 1rem;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-right: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            transition: transform 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--dark-color);
+            font-size: 0.95rem;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color) 0%, #224abe 100%);
+            padding-top: 1rem;
+            transition: all 0.3s;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-profile {
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .user-name {
+            color: white;
+            font-weight: 500;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-role {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 0.35rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .logout-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .sidebar-brand {
+            display: none;
+        }
+
+        .sidebar-divider {
+            margin: 1rem 0;
+        }
+
+        .sidebar-heading {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 0 1rem 1rem;
+        }
+
+        .nav-item {
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-radius: 0.35rem;
+            margin: 0 0.5rem;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+            font-size: 0.85rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Main Content Styles */
+        .content {
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            min-height: 100vh;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Form Styles */
+        .form-control,
+        .form-select {
+            border-radius: 0.35rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d3e2;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+
+        textarea.form-control {
+            min-height: 200px;
+            resize: vertical;
+            background-color: #f8f9fc;
+            border: 1px solid #d1d3e2;
+            transition: all 0.3s;
+            font-weight: 400;
+        }
+
+        textarea.form-control:focus {
+            background-color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+
+        /* API Radio Buttons */
+        .api-options {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: #f8f9fc;
+            border-radius: 0.5rem;
+            border: 1px solid #e3e6f0;
+        }
+
+        .api-options h6 {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .api-option {
+            position: relative;
+            margin: 0;
+        }
+
+        .api-option input[type="radio"] {
+            display: none;
+        }
+
+        .api-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            width: 100%;
+            padding: 0.75rem 0.5rem;
+            background: white;
+            border: 1px solid #e3e6f0;
+            border-radius: 0.35rem;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .api-option input[type="radio"]:checked+label {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 0.125rem 0.25rem rgba(78, 115, 223, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .api-option label:hover {
+            background: rgba(78, 115, 223, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        /* Search Bar in History */
+        .history-search {
+            margin-bottom: 1.5rem;
+        }
+
+        .history-search .input-group {
+            max-width: 600px;
+        }
+
+        .history-search input {
+            border-right: none;
+            padding-left: 1rem;
+        }
+
+        .history-search .input-group-text {
+            background: white;
+            border-left: none;
+        }
+
+        .history-search select {
+            max-width: 150px;
+            border-radius: 0.35rem;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .status-success {
+            background-color: rgba(28, 200, 138, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-failed {
+            background-color: rgba(231, 74, 59, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: none;
+            margin-bottom: 1rem;
+            background: white;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        /* Button Styles */
+        .btn {
+            border-radius: 0.35rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+            transform: translateY(-2px);
+        }
+
+        /* Loading Indicator Styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-content {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+        }
+
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 0.25rem solid var(--primary-color);
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: calc(-1 * var(--sidebar-width));
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .sidebar.toggled {
+                margin-left: 0;
+            }
+
+            .content.toggled {
+                margin-left: var(--sidebar-width);
+            }
+
+            .user-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .user-name {
+                font-size: 1rem;
+            }
+
+            .card-body {
+                padding: 0.75rem;
+            }
+
+            .form-control,
+            .form-select {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .table {
+                font-size: 0.85rem;
+            }
+
+            .card-title {
+                font-size: 1rem;
+            }
+
+            .results-stats .card-body h2 {
+                font-size: 1.25rem;
+            }
+
+            .history-search {
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .mb-3,
+            .mb-4 {
+                margin-bottom: 0.75rem !important;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Card Styles for Results */
+        .results-stats .card {
+            height: 100%;
+        }
+
+        .results-stats .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+            padding: 1.25rem;
+        }
+
+        .results-stats .card-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .results-stats .card-body h2,
+        .results-stats .card-body h5 {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+            line-height: 1.2;
+        }
+
+        /* Particles Background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: var(--light-color);
+        }
+
+        /* Contact Button */
+        .contact-btn {
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(37, 211, 102, 0.2);
+            border: none;
+            border-radius: 0.35rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+
+        .contact-btn:hover {
+            background: rgba(37, 211, 102, 0.3);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .contact-btn i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* Floating Contact Button */
+        .floating-contact {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1050;
+            background: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .floating-contact:hover {
+            transform: scale(1.1);
+            color: white;
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.6);
+        }
+
+        .floating-contact i {
+            font-size: 1.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .floating-contact {
+                bottom: 1rem;
+                right: 1rem;
+                width: 50px;
+                height: 50px;
+            }
+
+            .floating-contact i {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Add particles container -->
+    <div id="particles-js"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-profile">
+            <div class="user-avatar">
+                {{ session['username'][0].upper() }}
+            </div>
+            <div class="user-name">{{ session['username'] }}</div>
+            <div class="user-role">Panel SMS User</div>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-heading">Main Menu</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#finder" data-bs-toggle="tab" data-bs-target="#finder" role="tab">
+                        <i class="fas fa-search"></i>
+                        <span>Code Finder</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#history" data-bs-toggle="tab" data-bs-target="#history" role="tab">
+                        <i class="fas fa-history"></i>
+                        <span>History</span>
+                    </a>
+                </li>
+                {% if session['username'] == 'admin' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin') }}">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Admin Panel</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="{{ url_for('logout') }}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="finder" role="tabpanel">
+                <div class="card fade-in">
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('verification_code_finder') }}"
+                            onsubmit="return validateForm()">
+                            <div class="mb-3">
+                                <label for="numbers" class="form-label">Phone Numbers</label>
+                                <textarea id="numbers" name="numbers" class="form-control" rows="8" required
+                                    placeholder="Enter phone numbers, one per line"></textarea>
+                                <div class="form-text">Enter one or more phone numbers, each on a new line</div>
+                            </div>
+
+                            <div class="api-options">
+                                <h6 class="mb-3">Select API</h6>
+                                <div class="api-grid">
+                                    <div class="api-option">
+                                        <input type="radio" id="api221" name="api" value="+221" required>
+                                        <label for="api221">+221</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api502" name="api" value="+502">
+                                        <label for="api502">+502</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api996" name="api" value="+996+855">
+                                        <label for="api996">+996+855</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api260" name="api" value="+260">
+                                        <label for="api260">+260</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="apiKyrgyzstan" name="api" value="Kyrgyzstan">
+                                        <label for="apiKyrgyzstan">Kyrgyzstan</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="apiAngola" name="api" value="Angola">
+                                        <label for="apiAngola">Angola</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api856" name="api" value="+856">
+                                        <label for="api856">+856</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api60" name="api" value="+60">
+                                        <label for="api60">+60</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api966" name="api" value="+966">
+                                        <label for="api966">+966</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api31" name="api" value="+31">
+                                        <label for="api31">+31</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="apiNetherlands" name="api" value="Netherlands">
+                                        <label for="apiNetherlands">Netherlands</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api507" name="api" value="+507">
+                                        <label for="api507">+507</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api44" name="api" value="+44">
+                                        <label for="api44">+44</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="apiIraq" name="api" value="Iraq">
+                                        <label for="apiIraq">Iraq</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api591" name="api" value="+591">
+                                        <label for="api591">+591</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="apiPanama" name="api" value="PANAMA">
+                                        <label for="apiPanama">PANAMA</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api2" name="api" value="+2">
+                                        <label for="api2">+2</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api92" name="api" value="+92">
+                                        <label for="api92">+92</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api447" name="api" value="+447">
+                                        <label for="api447">+447</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="apiUK" name="api" value="united_kingdom">
+                                        <label for="apiUK">UK</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api93" name="api" value="+93">
+                                        <label for="api93">+93</label>
+                                    </div>
+                                    <div class="api-option">
+                                        <input type="radio" id="api595" name="api" value="+595">
+                                        <label for="api595">+595</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" id="phpsessid-field" style="display: none;">
+                                <label for="phpsessid" class="form-label">PHPSESSID</label>
+                                <input type="text" id="phpsessid" name="phpsessid" class="form-control"
+                                    placeholder="Enter PHPSESSID">
+                                <div class="form-text">Required for +966 and Iraq APIs</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 mt-3">
+                                <i class="fas fa-download me-2"></i>Get Data
+                            </button>
+
+                            <div class="loading-indicator text-center mt-4" id="loadingIndicator"
+                                style="display: none;">
+                                <div class="loading-spinner mb-2"></div>
+                                <p class="text-muted">Processing your request...</p>
+                            </div>
+                        </form>
+
+                        {% if results %}
+                        <div class="card mt-4 slide-in">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Results</h5>
+                                <button class="btn btn-success" onclick="exportTableToCSV()">
+                                    <i class="fas fa-file-export me-2"></i>Export CSV
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4 results-stats">
+                                    <div class="col-md-4">
+                                        <div class="card bg-primary text-white">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Total Success</h6>
+                                                <h2 class="mb-0">{{ results['total_success'] }}</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card bg-danger text-white">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Total Fail</h6>
+                                                <h2 class="mb-0">{{ results['total_fail'] }}</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card bg-info text-white">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Date</h6>
+                                                <h2 class="mb-0">{{ results['date'] }}</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Phone Number</th>
+                                                <th>Code</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for number, code in results['codes'].items() %}
+                                            <tr>
+                                                <td>{{ number }}</td>
+                                                <td>
+                                                    {% if code and code.startswith('http') %}
+                                                    <div class="d-flex align-items-center">
+                                                        <button onclick="toggleAudio(this, '{{ code }}')"
+                                                            class="btn btn-primary btn-sm me-2">
+                                                            <i class="fas fa-play"></i>
+                                                        </button>
+                                                        <audio style="display: none;">
+                                                            <source src="{{ code }}" type="audio/wav">
+                                                            Your browser does not support the audio element.
+                                                        </audio>
+                                                    </div>
+                                                    {% else %}
+                                                    {{ code }}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="history-search">
+                            <div class="input-group">
+                                <input type="text" id="historySearch" class="form-control"
+                                    placeholder="Search in history...">
+                                <select class="form-select" id="searchFilter" style="max-width: 120px;">
+                                    <option value="all">All</option>
+                                    <option value="number">Number</option>
+                                    <option value="api">API</option>
+                                    <option value="date">Date</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="historyTable">
+                                <thead>
+                                    <tr>
+                                        <th>Number</th>
+                                        <th>API Used</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if user_history %}
+                                    {% for entry in user_history %}
+                                    <tr>
+                                        <td>{{ entry.number }}</td>
+                                        <td>{{ entry.api }}</td>
+                                        <td>
+                                            {% if entry.status == 'Failed' %}
+                                            <span class="badge bg-danger">{{ entry.status }}</span>
+                                            {% else %}
+                                            <span class="badge bg-success">{{ entry.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ entry.date }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No history available</td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update loading overlay -->
+    <div class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Processing your request...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Particles.js configuration
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: '#4e73df'
+                    },
+                    shape: {
+                        type: 'circle'
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: false
+                    },
+                    size: {
+                        value: 3,
+                        random: true
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#4e73df',
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: 'none',
+                        random: false,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'grab'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+
+            // Form submission and loading indicator
+            const form = document.querySelector('form');
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            const numbersInput = document.getElementById('numbers');
+            const apiRadios = document.querySelectorAll('input[name="api"]');
+            const phpsessidField = document.getElementById('phpsessid-field');
+
+            function validateForm() {
+                const numbers = numbersInput.value.trim();
+                const selectedApi = document.querySelector('input[name="api"]:checked');
+
+                if (!numbers) {
+                    alert('Please enter at least one phone number');
+                    return false;
+                }
+
+                if (!selectedApi) {
+                    alert('Please select an API');
+                    return false;
+                }
+
+                // Check PHPSESSID if needed APIs are selected
+                if ((selectedApi.value === '+966' || selectedApi.value === 'Iraq') &&
+                    (!document.getElementById('phpsessid').value.trim())) {
+                    alert('PHPSESSID is required for the selected API');
+                    return false;
+                }
+
+                return true;
+            }
+
+            form.addEventListener('submit', function (event) {
+                // Prevent default form submission
+                event.preventDefault();
+
+                // Validate form
+                if (validateForm()) {
+                    // Show loading overlay
+                    loadingOverlay.style.display = 'flex';
+
+                    // Submit the form after a short delay
+                    setTimeout(() => {
+                        this.submit();
+                    }, 100);
+                }
+            });
+
+            // Show/hide PHPSESSID field based on API selection
+            apiRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.value === '+966' || this.value === 'Iraq') {
+                        phpsessidField.style.display = 'block';
+                    } else {
+                        phpsessidField.style.display = 'none';
+                    }
+                });
+            });
+
+            // Initial check for API selection
+            const selectedApi = document.querySelector('input[name="api"]:checked');
+            if (selectedApi && (selectedApi.value === '+966' || selectedApi.value === 'Iraq')) {
+                phpsessidField.style.display = 'block';
+            }
+
+            // Mobile sidebar toggle
+            const sidebarToggle = document.createElement('button');
+            sidebarToggle.className = 'btn btn-primary d-md-none position-fixed';
+            sidebarToggle.style.cssText = 'top: 1rem; right: 1rem; z-index: 1001;';
+            sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            document.body.appendChild(sidebarToggle);
+
+            sidebarToggle.addEventListener('click', function () {
+                document.querySelector('.sidebar').classList.toggle('toggled');
+                document.querySelector('.content').classList.toggle('toggled');
+            });
+
+            // History search functionality
+            function initializeSearch() {
+                const searchInput = document.getElementById('historySearch');
+                const searchFilter = document.getElementById('searchFilter');
+                const table = document.getElementById('historyTable');
+
+                if (!searchInput || !searchFilter || !table) return;
+
+                function filterTable() {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    const filterType = searchFilter.value;
+                    const rows = table.querySelectorAll('tbody tr');
+
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        if (cells.length === 0) return;
+
+                        let text = '';
+                        if (filterType === 'all') {
+                            text = Array.from(cells).map(cell => cell.textContent).join(' ').toLowerCase();
+                        } else {
+                            const cellIndex = {
+                                'number': 0,
+                                'api': 1,
+                                'date': 3
+                            }[filterType] || 0;
+                            text = cells[cellIndex].textContent.toLowerCase();
+                        }
+
+                        row.style.display = text.includes(searchTerm) ? '' : 'none';
+                    });
+                }
+
+                searchInput.addEventListener('input', filterTable);
+                searchFilter.addEventListener('change', filterTable);
+            }
+
+            // Initialize search on page load
+            initializeSearch();
+
+            // Initialize search when switching to history tab
+            const historyTab = document.querySelector('a[href="#history"]');
+            if (historyTab) {
+                historyTab.addEventListener('shown.bs.tab', initializeSearch);
+            }
+
+            // Audio player functions
+            let currentlyPlaying = null;
+
+            function toggleAudio(button, url) {
+                const audioElement = button.nextElementSibling;
+                const icon = button.querySelector('i');
+
+                if (currentlyPlaying && currentlyPlaying !== audioElement) {
+                    currentlyPlaying.pause();
+                    currentlyPlaying.currentTime = 0;
+                    currentlyPlaying.previousElementSibling.querySelector('i').className = 'fas fa-play';
+                }
+
+                if (audioElement.paused) {
+                    audioElement.play();
+                    icon.className = 'fas fa-pause';
+                    currentlyPlaying = audioElement;
+                } else {
+                    audioElement.pause();
+                    audioElement.currentTime = 0;
+                    icon.className = 'fas fa-play';
+                    currentlyPlaying = null;
+                }
+            }
+
+            function exportTableToCSV() {
+                const rows = document.querySelectorAll('table tr');
+                let csv = [];
+                rows.forEach(row => {
+                    const rowData = [];
+                    row.querySelectorAll('th, td').forEach(cell => rowData.push(cell.textContent.trim()));
+                    csv.push(rowData.join(','));
+                });
+                const csvContent = 'data:text/csv;charset=utf-8,' + csv.join('\n');
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement('a');
+                link.setAttribute('href', encodedUri);
+                link.setAttribute('download', 'verification_history.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+    </script>
+</body>
+
+</html>

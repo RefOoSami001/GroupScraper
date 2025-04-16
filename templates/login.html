@@ -1,21 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login & Signup</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Include Particles.js -->
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #858796;
+            --success-color: #1cc88a;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --info-color: #36a0f2;
+            --light-bg: #f8f9fc;
+            --card-bg: #ffffff;
+            --text-primary: #5a5c69;
+            --text-secondary: #858796;
+        }
+
         body {
             margin: 0;
             overflow: hidden;
             height: 100vh;
-            background: linear-gradient(145deg, #1e293b, #334155);
-            color: #ffffff;
+            background: #f8f9fc;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -34,13 +48,11 @@
         .container {
             max-width: 400px;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
+            background: var(--card-bg);
             border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
             position: relative;
             z-index: 1;
-            color: #e2e8f0;
         }
 
         h3 {
@@ -48,86 +60,245 @@
             font-weight: 700;
             font-size: 1.8rem;
             margin-bottom: 25px;
-            color: #38bdf8;
+            color: var(--primary-color);
         }
 
         .form-label {
             font-weight: 600;
-            color: #94a3b8;
+            color: var(--text-secondary);
         }
 
         .form-control {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
+            background: var(--light-bg);
+            border: 1px solid #d1d3e2;
             padding: 12px;
             font-size: 0.95rem;
             border-radius: 8px;
-            color: #ffffff;
+            color: var(--text-primary);
         }
 
         .form-control:focus {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: #38bdf8;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+            background: var(--light-bg);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+            color: var(--text-primary);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .input-group-text {
+            background: var(--light-bg);
+            border: 1px solid #d1d3e2;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .input-group-text:hover {
+            background: #e3e6f0;
         }
 
         .btn-primary {
-            background: linear-gradient(145deg, #0ea5e9, #0284c7);
+            background: var(--primary-color);
             border: none;
             padding: 12px 20px;
             font-weight: 600;
             font-size: 1rem;
             border-radius: 8px;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: all 0.3s ease;
             text-transform: uppercase;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(145deg, #0284c7, #0369a1);
+            background: #2e59d9;
             transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(56, 189, 248, 0.5);
+            box-shadow: 0 6px 12px rgba(78, 115, 223, 0.2);
         }
 
         .alert {
-            background: rgba(255, 0, 0, 0.2);
+            background: rgba(231, 74, 59, 0.1);
             border: none;
-            color: #ff7f7f;
+            color: var(--danger-color);
+        }
+
+        .nav-tabs {
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-secondary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--primary-color);
+            background: rgba(78, 115, 223, 0.1);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background: rgba(78, 115, 223, 0.2);
+            border: none;
+        }
+
+        .tab-content {
+            padding: 0;
+        }
+
+        .account-status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: rgba(246, 194, 62, 0.1);
+            border: 1px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .admin-contact {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: rgba(78, 115, 223, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .admin-contact a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .admin-contact a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            h3 {
+                font-size: 1.5rem;
+            }
+
+            .form-control {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .btn-primary {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <div id="particles-js"></div>
     <div class="container">
-        <h3>Login</h3>
-        
+        <h3>Welcome</h3>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="alert alert-{{ messages[0][0] }} alert-dismissible fade show" role="alert">
-                    {{ messages[0][1] }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endif %}
+        {% if messages %}
+        <div class="alert alert-{{ messages[0][0] }} alert-dismissible fade show" role="alert">
+            {{ messages[0][1] }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
         {% endwith %}
 
-        <form method="post">
-            <div class="mb-3">
-                <label for="username" class="form-label">
-                    <i class="fas fa-user"></i> Username
-                </label>
-                <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">
-                    <i class="fas fa-lock"></i> Password
-                </label>
-                <input type="password" class="form-control" name="password" id="password" placeholder="Enter password" required>
-            </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary">
+        <ul class="nav nav-tabs" id="authTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login"
+                    type="button" role="tab">
                     <i class="fas fa-sign-in-alt"></i> Login
                 </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="signup-tab" data-bs-toggle="tab" data-bs-target="#signup" type="button"
+                    role="tab">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="authTabsContent">
+            <!-- Login Form -->
+            <div class="tab-pane fade show active" id="login" role="tabpanel">
+                <form method="post" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="fas fa-user"></i> Username
+                        </label>
+                        <input type="text" class="form-control" name="username" id="username"
+                            placeholder="Enter username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="password" id="password"
+                                placeholder="Enter password" required>
+                            <span class="input-group-text" onclick="togglePassword('password')">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+
+            <!-- Signup Form -->
+            <div class="tab-pane fade" id="signup" role="tabpanel">
+                <form method="post" action="{{ url_for('add_user_route') }}">
+                    <input type="hidden" name="action" value="add">
+                    <div class="mb-3">
+                        <label for="signup-username" class="form-label">
+                            <i class="fas fa-user"></i> Username
+                        </label>
+                        <input type="text" class="form-control" name="username" id="signup-username"
+                            placeholder="Choose username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="signup-password" class="form-label">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="password" id="signup-password"
+                                placeholder="Create password" required>
+                            <span class="input-group-text" onclick="togglePassword('signup-password')">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </button>
+                    </div>
+                </form>
+                <div class="account-status">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Your account will be deactivated after registration. Please contact the admin to activate your
+                    account.
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap 5 JS and Popper.js -->
@@ -144,7 +315,7 @@
                     }
                 },
                 "color": {
-                    "value": ["#38bdf8", "#22d3ee", "#0ea5e9"]
+                    "value": ["#4e73df", "#36a0f2", "#1cc88a"]
                 },
                 "shape": {
                     "type": "circle",
@@ -153,15 +324,15 @@
                     }
                 },
                 "opacity": {
-                    "value": 0.6,
+                    "value": 0.3,
                     "anim": {
                         "enable": true,
                         "speed": 1,
-                        "opacity_min": 0.3
+                        "opacity_min": 0.1
                     }
                 },
                 "size": {
-                    "value": 4,
+                    "value": 3,
                     "random": true
                 },
                 "move": {
@@ -180,6 +351,22 @@
             },
             "retina_detect": true
         });
+
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = passwordInput.nextElementSibling.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
     </script>
 </body>
+
 </html>

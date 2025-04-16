@@ -1,0 +1,112 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    height: 100vh;
+    background: linear-gradient(145deg, #1e293b, #334155);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+#particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.container {
+    max-width: 400px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 1;
+    color: #e2e8f0;
+}
+
+h3 {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #38bdf8;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 12px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    color: #ffffff;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+.btn-primary {
+    background: linear-gradient(145deg, #0ea5e9, #0284c7);
+    border: none;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    text-transform: uppercase;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(145deg, #0284c7, #0369a1);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(56, 189, 248, 0.5);
+}
+
+.alert {
+    background: rgba(255, 0, 0, 0.2);
+    border: none;
+    color: #ff7f7f;
+}
+
+.nav-tabs {
+    border: none;
+    margin-bottom: 20px;
+}
+
+.nav-tabs .nav-link {
+    color: #94a3b8;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+}
+
+.nav-tabs .nav-link.active {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.2);
+    border: none;
+}
+
+.tab-content {
+    padding: 0;
+}
