@@ -884,14 +884,14 @@
                                                 <td>
                                                     {% if code and code.startswith('http') %}
                                                     <div class="d-flex align-items-center">
-                                                        <button onclick="toggleAudio(this, '{{ code }}')"
-                                                            class="btn btn-primary btn-sm me-2">
+                                                        <button onclick="playAudioFile('{{ code }}')"
+                                                            class="btn btn-primary btn-sm me-2 play-btn"
+                                                            data-url="{{ code }}">
                                                             <i class="fas fa-play"></i>
+                                                            <span class="spinner-border spinner-border-sm d-none"
+                                                                role="status" aria-hidden="true"></span>
                                                         </button>
-                                                        <audio style="display: none;">
-                                                            <source src="{{ code }}" type="audio/wav">
-                                                            Your browser does not support the audio element.
-                                                        </audio>
+                                                        <span class="audio-status"></span>
                                                     </div>
                                                     {% else %}
                                                     {{ code }}
@@ -974,7 +974,151 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Add global audio context
+        let audioContext = null;
+        let currentlyPlayingButton = null;
+        let currentSound = null;
+
+        // Make playAudioFile globally available
+        function playAudioFile(url) {
+            // Find the button that was clicked
+            const allButtons = document.querySelectorAll('.play-btn');
+            const button = Array.from(allButtons).find(btn => btn.dataset.url === url);
+
+            if (!button) return;
+
+            const icon = button.querySelector('i');
+            const spinner = button.querySelector('.spinner-border');
+            const statusSpan = button.parentElement.querySelector('.audio-status');
+
+            // If this is already playing, stop it
+            if (currentlyPlayingButton === button && currentSound) {
+                // Stop the current sound
+                if (currentSound.source) {
+                    currentSound.source.stop();
+                    currentSound.source = null;
+                }
+                if (currentSound.audio) {
+                    currentSound.audio.pause();
+                    currentSound.audio = null;
+                }
+
+                // Reset the button
+                icon.classList.remove('d-none');
+                spinner.classList.add('d-none');
+                icon.className = 'fas fa-play';
+                statusSpan.textContent = '';
+
+                currentlyPlayingButton = null;
+                currentSound = null;
+                return;
+            }
+
+            // Stop any previously playing audio
+            if (currentlyPlayingButton && currentSound) {
+                const prevIcon = currentlyPlayingButton.querySelector('i');
+                const prevSpinner = currentlyPlayingButton.querySelector('.spinner-border');
+                const prevStatus = currentlyPlayingButton.parentElement.querySelector('.audio-status');
+
+                // Stop the current sound
+                if (currentSound.source) {
+                    currentSound.source.stop();
+                    currentSound.source = null;
+                }
+                if (currentSound.audio) {
+                    currentSound.audio.pause();
+                    currentSound.audio = null;
+                }
+
+                // Reset the previous button
+                prevIcon.classList.remove('d-none');
+                prevSpinner.classList.add('d-none');
+                prevIcon.className = 'fas fa-play';
+                prevStatus.textContent = '';
+            }
+
+            // Set this as the currently playing button
+            currentlyPlayingButton = button;
+            currentSound = {};
+
+            // Show loading state
+            icon.classList.add('d-none');
+            spinner.classList.remove('d-none');
+            statusSpan.textContent = 'Loading...';
+
+            // Method 1: Using Fetch API and Audio element (more compatible)
+            const audio = new Audio();
+            audio.src = url;
+
+            audio.onloadeddata = function () {
+                // Audio has loaded and can play
+                spinner.classList.add('d-none');
+                icon.classList.remove('d-none');
+                icon.className = 'fas fa-pause';
+                statusSpan.textContent = 'Playing';
+
+                currentSound.audio = audio;
+            };
+
+            audio.onended = function () {
+                // Audio playback finished
+                icon.className = 'fas fa-play';
+                statusSpan.textContent = '';
+                currentlyPlayingButton = null;
+                currentSound = null;
+            };
+
+            audio.onerror = function (e) {
+                // Error during loading or playback
+                console.error("Audio error:", e);
+                spinner.classList.add('d-none');
+                icon.classList.remove('d-none');
+                icon.className = 'fas fa-play';
+                statusSpan.textContent = 'Error loading audio';
+
+                setTimeout(() => {
+                    statusSpan.textContent = '';
+                }, 3000);
+
+                currentlyPlayingButton = null;
+                currentSound = null;
+            };
+
+            // Try to play with error handling
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.error("Play failed:", error);
+                    spinner.classList.add('d-none');
+                    icon.classList.remove('d-none');
+                    icon.className = 'fas fa-play';
+                    statusSpan.textContent = 'Playback failed';
+
+                    setTimeout(() => {
+                        statusSpan.textContent = '';
+                    }, 3000);
+
+                    currentlyPlayingButton = null;
+                    currentSound = null;
+                });
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Web Audio API - create on user interaction to avoid autoplay policy issues
+            document.addEventListener('click', function initAudio() {
+                if (!audioContext) {
+                    try {
+                        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                        audioContext = new AudioContext();
+                        // Remove the initialization listener once we have the context
+                        document.removeEventListener('click', initAudio);
+                    } catch (e) {
+                        console.error("Web Audio API is not supported in this browser", e);
+                    }
+                }
+            }, { once: false });
+
             // Particles.js configuration
             particlesJS('particles-js', {
                 particles: {
@@ -1159,31 +1303,7 @@
                 historyTab.addEventListener('shown.bs.tab', initializeSearch);
             }
 
-            // Audio player functions
-            let currentlyPlaying = null;
-
-            function toggleAudio(button, url) {
-                const audioElement = button.nextElementSibling;
-                const icon = button.querySelector('i');
-
-                if (currentlyPlaying && currentlyPlaying !== audioElement) {
-                    currentlyPlaying.pause();
-                    currentlyPlaying.currentTime = 0;
-                    currentlyPlaying.previousElementSibling.querySelector('i').className = 'fas fa-play';
-                }
-
-                if (audioElement.paused) {
-                    audioElement.play();
-                    icon.className = 'fas fa-pause';
-                    currentlyPlaying = audioElement;
-                } else {
-                    audioElement.pause();
-                    audioElement.currentTime = 0;
-                    icon.className = 'fas fa-play';
-                    currentlyPlaying = null;
-                }
-            }
-
+            // Function to export table to CSV
             function exportTableToCSV() {
                 const rows = document.querySelectorAll('table tr');
                 let csv = [];
