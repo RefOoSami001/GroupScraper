@@ -35,6 +35,8 @@ try:
     db = client.panelsms
     users_collection = db.users
     user_data_collection = db.user_data
+    # Add audio files collection
+    audio_files_collection = db.audio_files
 except Exception as e:
     print(f"Error connecting to MongoDB: {str(e)}")
     raise
@@ -112,7 +114,7 @@ def authenticate_user(username, password):
         return False
 
 # User Data Functions
-def add_user_data(username, number, status, api=None):
+def add_user_data(username, number, status, api=None, audio_id=None):
     try:
         # Check if there's an existing record with the same username, number and status (code)
         existing_entry = user_data_collection.find_one({
@@ -128,6 +130,7 @@ def add_user_data(username, number, status, api=None):
                 'number': number,
                 'status': status,
                 'api': api,
+                'audio_id': audio_id,  # Add audio_id field
                 'timestamp': datetime.now(),
                 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
@@ -145,7 +148,7 @@ def get_user_data(username):
     try:
         data = list(user_data_collection.find(
             {'username': username},
-            {'_id': 0, 'username': 1, 'number': 1, 'status': 1, 'api': 1, 'date': 1}
+            {'_id': 0, 'username': 1, 'number': 1, 'status': 1, 'api': 1, 'date': 1, 'audio_id': 1}
         ).sort('timestamp', -1))
         return data
     except Exception as e:
@@ -156,7 +159,7 @@ def get_number_data(numbers):
     try:
         data = list(user_data_collection.find(
             {'number': {'$in': numbers}},
-            {'_id': 0, 'username': 1, 'number': 1, 'status': 1, 'api': 1, 'date': 1}
+            {'_id': 0, 'username': 1, 'number': 1, 'status': 1, 'api': 1, 'date': 1, 'audio_id': 1}
         ).sort('timestamp', -1))
         return data
     except Exception as e:
@@ -313,45 +316,54 @@ def upload_file():
     if file.filename == '':
         return {'error': 'No selected file'}, 400
     
-    # Get custom ID from form data or generate UUID
-    custom_id = request.form.get('id')
-    
-    if custom_id and custom_id in file_mappings:
-        return {'error': 'ID already exists'}, 400
-    
     if file and allowed_file(file.filename):
-        # Use custom ID or generate UUID
-        file_id = custom_id if custom_id else str(uuid.uuid4())
-        
-        # Save file with original filename
-        filename = file.filename
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-        
-        # Store mapping with upload time
-        file_mappings[file_id] = {
-            'filename': filename,
-            'upload_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        }
-        
-        # Return the play URL
-        play_url = f"https://panelsms.onrender.com/play/{file_id}"
-        return {'play_url': play_url, 'file_id': file_id}, 200
+        try:
+            # Generate a unique ID for the file
+            file_id = str(uuid.uuid4())
+            
+            # Read the file content
+            file_content = file.read()
+            
+            # Store in MongoDB
+            audio_file_doc = {
+                '_id': file_id,
+                'filename': file.filename,
+                'content': file_content,
+                'content_type': 'audio/wav',
+                'upload_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            
+            audio_files_collection.insert_one(audio_file_doc)
+            
+            # Return the play URL
+            play_url = f"/play/{file_id}"
+            return {'play_url': play_url, 'file_id': file_id}, 200
+        except Exception as e:
+            print(f"Error uploading file: {str(e)}")
+            return {'error': f'File upload failed: {str(e)}'}, 500
     
     return {'error': 'Invalid file type'}, 400
 
 @app.route('/play/<file_id>')
 def play_sound(file_id):
     try:
-        if file_id not in file_mappings:
+        # Find the file in MongoDB
+        audio_file = audio_files_collection.find_one({'_id': file_id})
+        
+        if not audio_file:
             return {'error': 'File ID not found'}, 404
-            
-        filename = file_mappings[file_id]['filename']
-        return send_file(
-            os.path.join(UPLOAD_FOLDER, filename),
-            mimetype='audio/wav'
+        
+        # Create response with the binary content
+        response = app.response_class(
+            response=audio_file['content'],
+            status=200,
+            mimetype=audio_file['content_type']
         )
-    except FileNotFoundError:
-        return {'error': 'File not found'}, 404
+        
+        return response
+    except Exception as e:
+        print(f"Error playing sound: {str(e)}")
+        return {'error': 'File could not be played'}, 500
 
 # API Data Routes
 @app.route('/api_data', methods=['POST', 'GET'])
@@ -399,6 +411,8 @@ def verification_code_finder():
             
             for number in numbers_list:
                 code = None
+                audio_id = None
+                
                 if selected_api == '+221':
                     code = get_panel_code_api1(number)
                 elif selected_api == '+502':
@@ -450,16 +464,20 @@ def verification_code_finder():
                 elif selected_api == '+595':
                     code = get_panel_code_api22(number)
                 
-                if code:
+                # Check if code is an audio URL and extract file_id
+                if code and isinstance(code, str) and code.startswith('http') and '/play/' in code:
+                    audio_id = code.split('/play/')[1]
+                    status = "Audio Message"
+                elif code:
                     total_success += 1
                     status = code
                 else:
                     total_fail += 1
                     status = 'Failed'
                 
-                codes[number] = status
-                # Add data to database - will only save if it's not a duplicate
-                add_user_data(session['username'], number, status, selected_api)
+                codes[number] = code
+                # Add data to database with audio_id if available
+                add_user_data(session['username'], number, status, selected_api, audio_id)
             
             results = {
                 'total_success': total_success,
@@ -520,7 +538,13 @@ def admin():
                     flash('No data found for the specified username', 'info')
             
             elif search_type == 'number':
-                number_data = get_number_data([search_value])
+                # Split the search value by newlines and filter out empty lines
+                numbers = [num.strip() for num in search_value.split('\n') if num.strip()]
+                if not numbers:
+                    flash('Please enter at least one valid phone number', 'danger')
+                    return render_template('dashboard/admin.html', all_users=all_users)
+                
+                number_data = get_number_data(numbers)
                 if number_data:
                     total_success = sum(1 for entry in number_data if entry['status'] != 'Failed')
                     total_failed = sum(1 for entry in number_data if entry['status'] == 'Failed')
@@ -535,7 +559,7 @@ def admin():
                         all_users=all_users
                     )
                 else:
-                    flash('No data found for the specified number', 'info')
+                    flash('No data found for the specified numbers', 'info')
             
             else:
                 flash('Invalid search type', 'danger')
