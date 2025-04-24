@@ -790,8 +790,15 @@
                                 </div>
                                 <div class="col-md-6 col-sm-12">
                                     <label for="search_value" class="form-label">Search Value</label>
-                                    <input type="text" class="form-control" name="search_value" id="search_value"
-                                        required placeholder="Enter username or phone number...">
+                                    <textarea class="form-control" name="search_value" id="search_value" rows="3"
+                                        required
+                                        placeholder="Enter search term...">{{ search_value if search_value else '' }}</textarea>
+                                    <div id="number_help"
+                                        class="form-text {% if search_type != 'number' %}d-none{% endif %}">Enter one or
+                                        more phone numbers, each on a new line</div>
+                                    <div id="username_help"
+                                        class="form-text {% if search_type != 'username' %}d-none{% endif %}">Enter one
+                                        or more usernames, each on a new line</div>
                                 </div>
                                 <div class="col-md-2 col-sm-12">
                                     <label class="form-label d-none d-md-block">&nbsp;</label>
@@ -848,7 +855,21 @@
                                         <td>
                                             <span
                                                 class="badge {% if entry.status == 'Failed' %}bg-danger{% else %}bg-success{% endif %}">
+                                                {% if entry.audio_id %}
+                                                <div class="d-flex align-items-center">
+                                                    <button onclick="playAudioFile('/play/{{ entry.audio_id }}')"
+                                                        class="btn btn-primary btn-sm me-2 play-btn"
+                                                        data-url="/play/{{ entry.audio_id }}">
+                                                        <i class="fas fa-play"></i>
+                                                        <span class="spinner-border spinner-border-sm d-none"
+                                                            role="status" aria-hidden="true"></span>
+                                                    </button>
+                                                    <span class="audio-status"></span>
+                                                    <span class="badge bg-info ms-2">Audio</span>
+                                                </div>
+                                                {% else %}
                                                 {{ entry.status }}
+                                                {% endif %}
                                             </span>
                                         </td>
                                         <td><span class="d-inline-block text-truncate" style="max-width: 120px;">{{
@@ -950,6 +971,36 @@
                     window.location.hash = targetId;
                 });
             });
+
+            // Handle search type toggle
+            const searchTypeSelect = document.getElementById('search_type');
+            const searchValueInput = document.getElementById('search_value');
+            const numberHelp = document.getElementById('number_help');
+            const usernameHelp = document.getElementById('username_help');
+
+            if (searchTypeSelect && searchValueInput) {
+                // Set initial state based on selected value
+                updateSearchField(searchTypeSelect.value);
+
+                // Add change event listener
+                searchTypeSelect.addEventListener('change', function () {
+                    updateSearchField(this.value);
+                });
+            }
+
+            function updateSearchField(type) {
+                if (type === 'number') {
+                    // Update the placeholder for number search
+                    searchValueInput.placeholder = 'Enter phone numbers, one per line...';
+                    numberHelp.classList.remove('d-none');
+                    usernameHelp.classList.add('d-none');
+                } else {
+                    // Update the placeholder for username search
+                    searchValueInput.placeholder = 'Enter username...';
+                    numberHelp.classList.add('d-none');
+                    usernameHelp.classList.remove('d-none');
+                }
+            }
         });
 
         function showLoading() {
@@ -1041,6 +1092,135 @@
                 "retina_detect": true
             });
         });
+
+        // Audio playback functionality
+        let currentlyPlayingButton = null;
+        let currentSound = null;
+
+        // Audio playback function
+        function playAudioFile(url) {
+            // Find the button that was clicked
+            const allButtons = document.querySelectorAll('.play-btn');
+            const button = Array.from(allButtons).find(btn => btn.dataset.url === url);
+
+            if (!button) return;
+
+            const icon = button.querySelector('i');
+            const spinner = button.querySelector('.spinner-border');
+            const statusSpan = button.parentElement.querySelector('.audio-status');
+
+            // If this is already playing, stop it
+            if (currentlyPlayingButton === button && currentSound) {
+                // Stop the current sound
+                if (currentSound.source) {
+                    currentSound.source.stop();
+                    currentSound.source = null;
+                }
+                if (currentSound.audio) {
+                    currentSound.audio.pause();
+                    currentSound.audio = null;
+                }
+
+                // Reset the button
+                icon.classList.remove('d-none');
+                spinner.classList.add('d-none');
+                icon.className = 'fas fa-play';
+                statusSpan.textContent = '';
+
+                currentlyPlayingButton = null;
+                currentSound = null;
+                return;
+            }
+
+            // Stop any previously playing audio
+            if (currentlyPlayingButton && currentSound) {
+                const prevIcon = currentlyPlayingButton.querySelector('i');
+                const prevSpinner = currentlyPlayingButton.querySelector('.spinner-border');
+                const prevStatus = currentlyPlayingButton.parentElement.querySelector('.audio-status');
+
+                // Stop the current sound
+                if (currentSound.source) {
+                    currentSound.source.stop();
+                    currentSound.source = null;
+                }
+                if (currentSound.audio) {
+                    currentSound.audio.pause();
+                    currentSound.audio = null;
+                }
+
+                // Reset the previous button
+                prevIcon.classList.remove('d-none');
+                prevSpinner.classList.add('d-none');
+                prevIcon.className = 'fas fa-play';
+                prevStatus.textContent = '';
+            }
+
+            // Set this as the currently playing button
+            currentlyPlayingButton = button;
+            currentSound = {};
+
+            // Show loading state
+            icon.classList.add('d-none');
+            spinner.classList.remove('d-none');
+            statusSpan.textContent = 'Loading...';
+
+            // Using Audio element (more compatible)
+            const audio = new Audio();
+            audio.src = url;
+
+            audio.onloadeddata = function () {
+                // Audio has loaded and can play
+                spinner.classList.add('d-none');
+                icon.classList.remove('d-none');
+                icon.className = 'fas fa-pause';
+                statusSpan.textContent = 'Playing';
+
+                currentSound.audio = audio;
+            };
+
+            audio.onended = function () {
+                // Audio playback finished
+                icon.className = 'fas fa-play';
+                statusSpan.textContent = '';
+                currentlyPlayingButton = null;
+                currentSound = null;
+            };
+
+            audio.onerror = function (e) {
+                // Error during loading or playback
+                console.error("Audio error:", e);
+                spinner.classList.add('d-none');
+                icon.classList.remove('d-none');
+                icon.className = 'fas fa-play';
+                statusSpan.textContent = 'Error loading audio';
+
+                setTimeout(() => {
+                    statusSpan.textContent = '';
+                }, 3000);
+
+                currentlyPlayingButton = null;
+                currentSound = null;
+            };
+
+            // Try to play with error handling
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.error("Play failed:", error);
+                    spinner.classList.add('d-none');
+                    icon.classList.remove('d-none');
+                    icon.className = 'fas fa-play';
+                    statusSpan.textContent = 'Playback failed';
+
+                    setTimeout(() => {
+                        statusSpan.textContent = '';
+                    }, 3000);
+
+                    currentlyPlayingButton = null;
+                    currentSound = null;
+                });
+            }
+        }
     </script>
 </body>
 

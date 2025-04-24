@@ -502,7 +502,11 @@ def admin():
         
         try:
             if search_type == 'username':
-                user_data = get_user_data(search_value)
+                usernames_list = [name.strip() for name in search_value.split('\n') if name.strip()]
+                user_data = []
+                for username in usernames_list:
+                    user_data.extend(get_user_data(username))
+                
                 if user_data:
                     total_success = sum(1 for entry in user_data if entry['status'] != 'Failed')
                     total_failed = sum(1 for entry in user_data if entry['status'] == 'Failed')
@@ -517,10 +521,11 @@ def admin():
                         all_users=all_users
                     )
                 else:
-                    flash('No data found for the specified username', 'info')
+                    flash('No data found for the specified usernames', 'info')
             
             elif search_type == 'number':
-                number_data = get_number_data([search_value])
+                numbers_list = [num.strip() for num in search_value.split('\n') if num.strip()]
+                number_data = get_number_data(numbers_list)
                 if number_data:
                     total_success = sum(1 for entry in number_data if entry['status'] != 'Failed')
                     total_failed = sum(1 for entry in number_data if entry['status'] == 'Failed')
@@ -535,7 +540,7 @@ def admin():
                         all_users=all_users
                     )
                 else:
-                    flash('No data found for the specified number', 'info')
+                    flash('No data found for the specified numbers', 'info')
             
             else:
                 flash('Invalid search type', 'danger')
